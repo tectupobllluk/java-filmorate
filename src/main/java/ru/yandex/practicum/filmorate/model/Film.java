@@ -1,0 +1,24 @@
+package ru.yandex.practicum.filmorate.model;
+
+import lombok.*;
+import ru.yandex.practicum.filmorate.validator.ReleaseDateContraint;
+
+import javax.validation.constraints.*;
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Film {
+    @EqualsAndHashCode.Exclude
+    private Long id;
+    @NotEmpty
+    private String name;
+    @Size(max = 200)
+    private String description;
+    @NotNull
+    @ReleaseDateContraint
+    private LocalDate releaseDate;
+    @Positive
+    private Integer duration;
+}
