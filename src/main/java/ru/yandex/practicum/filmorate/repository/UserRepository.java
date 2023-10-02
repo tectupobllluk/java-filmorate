@@ -23,6 +23,9 @@ public class UserRepository {
 
     public void updateUser(User user) {
         if (users.containsKey(user.getId())) {
+            if (user.getName() == null) {
+                user.setName(user.getLogin());
+            }
             users.put(user.getId(), user);
         } else {
             throw new RuntimeException(String.format("Unknown user with " + user.getId() + " id!"));
