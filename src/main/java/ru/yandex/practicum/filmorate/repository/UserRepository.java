@@ -2,37 +2,23 @@ package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
-public class UserRepository {
-    private final HashMap<Long, User> users = new HashMap<>();
-    private long generatorId = 0;
+public interface UserRepository {
+    void saveUser(User user);
 
-    private long generateId() {
-        return ++generatorId;
-    }
+    void updateUser(User user);
 
-    public void saveUser(User user) {
-        user.setId(generateId());
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-    }
+    List<User> getAllUsers();
 
-    public void updateUser(User user) {
-        if (users.containsKey(user.getId())) {
-            if (user.getName() == null) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(), user);
-        } else {
-            throw new RuntimeException(String.format("Unknown user with " + user.getId() + " id!"));
-        }
-    }
+    Optional<User> getUser(long userId);
 
-    public List<User> getAllUsers() {
-        return List.copyOf(users.values());
-    }
+    void addFriend(User user, User friend);
+
+    void deleteFriend(User user, User friend);
+
+    List<User> getCommonFriends(User user, User friend);
+
+    List<User> getFriends(User user);
 }

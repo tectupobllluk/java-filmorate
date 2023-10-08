@@ -1,32 +1,23 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
-public class FilmRepository {
-    private final HashMap<Long, Film> films = new HashMap<>();
-    private long generatorId = 0;
+public interface FilmRepository {
+    void saveFilm(Film film);
 
-    private long generateId() {
-        return ++generatorId;
-    }
+    void updateFilm(Film film);
 
-    public void saveFilm(Film film) {
-        film.setId(generateId());
-        films.put(film.getId(), film);
-    }
+    List<Film> getAllFilms();
 
-    public void updateFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
-            throw new RuntimeException(String.format("Unknown film with " + film.getId() + " id!"));
-        }
-    }
+    Optional<Film> getFilm(long filmId);
 
-    public List<Film> getAllFilms() {
-        return List.copyOf(films.values());
-    }
+    void addLike(Film film, User user);
+
+    void deleteLike(Film film, User user);
+
+    List<Film> getPopularFilms(Long count);
 }
