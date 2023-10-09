@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = ReleaseDateValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ReleaseDateContraint {
+public @interface ReleaseDateConstraint {
     String message() default "Film release date must be after 28 december 1895";
 
     Class<?>[] groups() default {};

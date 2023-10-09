@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
-import ru.yandex.practicum.filmorate.validator.ReleaseDateContraint;
+import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ public class Film {
     @Size(min = 1, max = 200)
     private String description;
     @NotNull
-    @ReleaseDateContraint
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
