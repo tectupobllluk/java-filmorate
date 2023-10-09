@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserRepository implements UserRepository {
@@ -67,31 +68,23 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getCommonFriends(User user, User friend) {
         Set<Long> userFriendIds = userFriends.get(user.getId());
         Set<Long> friendFriendIds = userFriends.get(friend.getId());
-        List<User> commonFriends = new ArrayList<>();
+
         if (userFriendIds == null || friendFriendIds == null) {
-            return commonFriends;
-        }
-        for (User userFromList : users.values()) {
-            if (userFriendIds.contains(userFromList.getId()) &&
-                    friendFriendIds.contains(userFromList.getId())) {
-                commonFriends.add(userFromList);
-            }
+            return Collections.emptyList();
         }
 
-        return commonFriends;
+        return userFriendIds.stream()
+                .filter(friendFriendIds::contains)
+                .map(users::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<User> getFriends(User user) {
         Set<Long> userFriendIds = userFriends.get(user.getId());
-        List<User> friends = new ArrayList<>();
-
-        for (User userFromList : users.values()) {
-            if (userFriendIds.contains(userFromList.getId())) {
-                friends.add(userFromList);
-            }
-        }
-
-        return friends;
+        return userFriendIds.stream()
+                .map(users::get)
+                .collect(Collectors.toList());
     }
 }

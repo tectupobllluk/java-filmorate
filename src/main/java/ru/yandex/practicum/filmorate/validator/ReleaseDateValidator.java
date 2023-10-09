@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 
-public class ReleaseDateValidator implements ConstraintValidator<ReleaseDateContraint, LocalDate> {
+public class ReleaseDateValidator implements ConstraintValidator<ReleaseDateConstraint, LocalDate> {
     @Override
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {
         if (localDate == null) {

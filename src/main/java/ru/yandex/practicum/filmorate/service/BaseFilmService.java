@@ -57,9 +57,6 @@ public class BaseFilmService implements FilmService {
 
     @Override
     public List<Film> getPopularFilms(Long count) {
-        if (count == null) {
-            count = 10L;
-        }
         return filmRepository.getPopularFilms(count);
     }
 }

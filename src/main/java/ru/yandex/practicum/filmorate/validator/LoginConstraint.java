@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = LoginValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LoginContraint {
+public @interface LoginConstraint {
     String message() default "Login can't contain spaces";
 
     Class<?>[] groups() default {};
