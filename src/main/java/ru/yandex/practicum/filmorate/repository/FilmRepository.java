@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmRepository {
-    void saveFilm(Film film);
+    Film saveFilm(Film film);
 
-    void updateFilm(Film film);
+    Film updateFilm(Film film);
 
     List<Film> getAllFilms();
 

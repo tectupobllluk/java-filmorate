@@ -7,6 +7,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,7 @@ public class FilmTest {
     @Test
     void validateCorrectFilm() {
         Film film = new Film(1L, "Test", "test test test",
-                LocalDate.of(2000, 2, 9), 180);
+                LocalDate.of(2000, 2, 9), 180, new Mpa(2, null), Collections.emptyList());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(0, violations.size(), "Normal formatted film");
@@ -31,7 +32,7 @@ public class FilmTest {
     @Test
     void validateEmptyName() {
         Film film = new Film(1L, "", "test test test",
-                LocalDate.of(2000, 2, 9), 180);
+                LocalDate.of(2000, 2, 9), 180, new Mpa(2, null), Collections.emptyList());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), "Empty name of film");
@@ -43,7 +44,7 @@ public class FilmTest {
                 "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest" +
                 "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest";
         Film film = new Film(1L, "Test", description,
-                LocalDate.of(2000, 2, 9), 180);
+                LocalDate.of(2000, 2, 9), 180, new Mpa(2, null), Collections.emptyList());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(204, description.length());
@@ -53,7 +54,7 @@ public class FilmTest {
     @Test
     void validateReleaseDate() {
         Film film = new Film(1L, "Test", "test test test",
-                LocalDate.of(1890, 2, 9), 180);
+                LocalDate.of(1890, 2, 9), 180, new Mpa(2, null), Collections.emptyList());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), "Release date before 28 december 1895");
@@ -62,9 +63,9 @@ public class FilmTest {
     @Test
     void validateDurationOfFilm() {
         Film film = new Film(1L, "Test", "test test test",
-                LocalDate.of(2000, 2, 9), -180);
+                LocalDate.of(2000, 2, 9), -180, new Mpa(2, null), Collections.emptyList());
         Film secondFilm = new Film(1L, "Test", "test test test",
-                LocalDate.of(2000, 2, 9), 0);
+                LocalDate.of(2000, 2, 9), 0, new Mpa(2, null), Collections.emptyList());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size(), "Negative duration of film");
