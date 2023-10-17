@@ -19,17 +19,17 @@ public class FilmController {
     @PostMapping
     public Film createFilm(@RequestBody @Valid Film film) {
         log.info("Create film: {} - Started!", film);
-        filmService.saveFilm(film);
+        Film newFilm = filmService.saveFilm(film);
         log.info("Create film: {} - Finished!", film);
-        return film;
+        return newFilm;
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody @Valid Film film) {
         log.info("Update film: {} - Started!", film);
-        filmService.updateFilm(film);
+        Film updatedFilm = filmService.updateFilm(film);
         log.info("Update film: {} - Finished!", film);
-        return film;
+        return updatedFilm;
     }
 
     @GetMapping

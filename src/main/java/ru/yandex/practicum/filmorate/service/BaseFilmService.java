@@ -17,13 +17,13 @@ public class BaseFilmService implements FilmService {
     private final UserRepository userRepository;
 
     @Override
-    public void saveFilm(Film film) {
-        filmRepository.saveFilm(film);
+    public Film saveFilm(Film film) {
+        return filmRepository.saveFilm(film);
     }
 
     @Override
-    public void updateFilm(Film film) {
-        filmRepository.updateFilm(film);
+    public Film updateFilm(Film film) {
+        return filmRepository.updateFilm(film);
     }
 
     @Override
