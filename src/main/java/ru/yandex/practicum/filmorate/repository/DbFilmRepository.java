@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -115,6 +116,73 @@ public class DbFilmRepository implements FilmRepository {
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String fields) {
+        if (query.isEmpty()) {
+            return getAllFilms();
+        }
+
+        String[] parameters = fields.split(",");
+        String sqlDirectorName = "select f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "count(l.user_id) as flike " +
+                "from films as f " +
+                "inner join film_directors as fd on f.film_id = fd.film_id " +
+                "inner join directors as d on d.director_id = fd.director_id " +
+                "left join mpa as m on f.mpa_id = m.mpa_id " +
+                "left join likes as l on f.film_id = l.film_id " +
+                "where upper(d.name) like concat('%', upper(?),  '%') " +
+                "group by f.film_id " +
+                "order by f.film_id desc ";
+
+        String sqlFilmName = "select f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "count(l.user_id) as flike " +
+                "from films as f " +
+                "left join mpa as m on f.mpa_id = m.mpa_id " +
+                "left join likes as l on f.film_id = l.film_id " +
+                "where upper(f.name) like concat('%', upper(?),  '%') " +
+                "group by f.film_id " +
+                "order by f.film_id desc ";
+
+        String sqlFilmAndDirector = "select f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "count(l.user_id) as flikes " +
+                "from films as f " +
+                "left join film_directors as fd on f.film_id = fd.film_id " +
+                "left join directors as d on d.director_id = fd.director_id " +
+                "left join mpa as m on f.mpa_id = m.mpa_id " +
+                "left join likes As l on f.film_id = l.film_id " +
+                "where upper(f.name) like concat('%', upper(?),  '%') OR " +
+                "upper(d.name) like concat('%', upper(?),  '%') " +
+                "group by f.film_id " +
+                "order by f.film_id desc ";
+
+
+        if (Arrays.stream(parameters).allMatch("director"::equals)) {
+            return jdbcTemplate.query(sqlDirectorName, new FilmRowMapper(), query);
+        } else if (Arrays.stream(parameters).allMatch("title"::equals)) {
+            return jdbcTemplate.query(sqlFilmName, new FilmRowMapper(), query);
+        } else {
+            return jdbcTemplate.query(sqlFilmAndDirector, new FilmRowMapper(), query, query);
+        }
     }
 
     private class FilmRowMapper implements RowMapper<Film> {

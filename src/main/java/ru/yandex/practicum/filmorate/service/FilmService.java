@@ -18,4 +18,6 @@ public interface FilmService {
     Film getFilm(long filmId);
 
     List<Film> getPopularFilms(Long count);
+
+    List<Film> searchFilms(String query, String fields);
 }

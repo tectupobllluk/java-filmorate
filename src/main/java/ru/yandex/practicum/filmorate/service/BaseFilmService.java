@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -58,5 +59,24 @@ public class BaseFilmService implements FilmService {
     @Override
     public List<Film> getPopularFilms(Long count) {
         return filmRepository.getPopularFilms(count);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String fields) {
+        List<String> allowed = List.of("title", "director");
+        List<String> inputFields = Arrays.asList(fields.split(","));
+
+        if (!allowed.containsAll(inputFields)) {
+            throw new IllegalArgumentException("неизвестное поле для поиска " + fields + ". Варианты: [director, title]");
+        }
+        List<Film> films = filmRepository.searchFilms(query, fields);
+    /*for (Film film : films) {
+        List<Director> directors = filmDirectorDao.getDirectorsIdByFilmId(film.getId())
+                .stream()
+                .map(directorDao::getDirectorById)
+                .collect(Collectors.toList());
+        film.setDirectors(directors);
+    }*/
+        return films;
     }
 }
