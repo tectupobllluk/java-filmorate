@@ -83,6 +83,13 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
+    public void deleteUser(long userId) {
+        final String sqlQuery = "DELETE FROM users " +
+                "WHERE user_id = ?;";
+        jdbcTemplate.update(sqlQuery, userId);
+    }
+
+    @Override
     public void addFriend(User user, User friend) {
         final String sqlQuery = "INSERT INTO friends (user_id, friend_id) " +
                 "VALUES (?, ?);";
