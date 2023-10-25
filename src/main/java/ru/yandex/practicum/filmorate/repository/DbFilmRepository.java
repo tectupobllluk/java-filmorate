@@ -117,6 +117,33 @@ public class DbFilmRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
     }
 
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sqlQuery = "SELECT f.*" +
+                "FROM films AS f" +
+                "LEFT JOIN likes AS l1 ON f.film_id = l1.film_id" +
+                "LEFT JOIN likes AS l2 ON l1.film_id = l2.film_id" +
+                "WHERE l1.user_id = {userId} AND l2.user_id = {friendId}" +
+                "GROUP BY f.film_id" +
+                "ORDER BY COUNT(*) DESC";
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, friendId);
+
+    /*
+    public List<Film> getCommonFilms(long userId, long friendId) {
+    String sqlQuery = "SELECT film_id " +
+                      "FROM film_Likes " +
+                      "WHERE user_id=? AND film_id IN (SELECT film_id FROM film_Likes WHERE user_id =?);";
+    List<Long> filmsId = jdbcTemplate.queryForList(sqlQuery, Long.class, userId, friendId);
+
+    return filmsId.stream()
+            .map(this::getFilm) //Optional...
+            .sorted(Comparator.comparing(Film::getLikes).reversed())
+            .collect(Collectors.toList());
+}
+     */
+    }
+
     private class FilmRowMapper implements RowMapper<Film> {
         @Override
         public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
