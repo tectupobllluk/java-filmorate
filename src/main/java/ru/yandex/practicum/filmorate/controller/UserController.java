@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFilm(@PathVariable long id) {
+    public void deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
     }
 }
