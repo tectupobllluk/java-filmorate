@@ -27,39 +27,39 @@ public class BaseReviewService implements ReviewService {
 
     @Override
     public Review createReview(Review review) {
-        userRepository.getUser(review.getUserId()).
-                orElseThrow(() -> new NotFoundException("User not found"));
+        userRepository.getUser(review.getUserId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
         filmRepository.getFilm(review.getFilmId())
                 .orElseThrow(() -> new NotFoundException("Film not found"));
 
-        return reviewRepository.createReview(review).
-                orElseThrow(() -> new NotFoundException("Failed to create a review"));
+        return reviewRepository.createReview(review)
+                .orElseThrow(() -> new NotFoundException("Failed to create a review"));
     }
 
     @Override
     public Review updateReview(Review review) {
-        userRepository.getUser(review.getUserId()).
-                orElseThrow(() -> new NotFoundException("User not found"));
+        userRepository.getUser(review.getUserId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
         filmRepository.getFilm(review.getFilmId())
                 .orElseThrow(() -> new NotFoundException("Film not found"));
-        reviewRepository.getReviewById(review.getReviewId()).
-                orElseThrow(() -> new NotFoundException("Failed to create a review"));
+        reviewRepository.getReviewById(review.getReviewId())
+                .orElseThrow(() -> new NotFoundException("Failed to create a review"));
 
         return reviewRepository.updateReview(review);
     }
 
     @Override
     public void deleteReview(long reviewId) {
-        reviewRepository.getReviewById(reviewId).
-                orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
+        reviewRepository.getReviewById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
 
         reviewRepository.deleteReview(reviewId);
     }
 
     @Override
     public Review getReviewById(long reviewId) {
-        return reviewRepository.getReviewById(reviewId).
-                orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
+        return reviewRepository.getReviewById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
     }
 
     @Override
