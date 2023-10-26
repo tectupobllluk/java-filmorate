@@ -22,7 +22,7 @@ public class BaseReviewService implements ReviewService {
                              UserRepository userRepository) {
         this.reviewRepository = reviewRepository;
         this.filmRepository = filmRepository;
-        this.userRepository =userRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
