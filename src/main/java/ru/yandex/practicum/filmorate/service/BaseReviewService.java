@@ -75,5 +75,4 @@ public class BaseReviewService implements ReviewService {
             return reviewRepository.getReviewsByFilmId(count);
         }
     }
-
 }
