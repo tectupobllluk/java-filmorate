@@ -62,7 +62,7 @@ public class BaseFilmService implements FilmService {
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> films = filmRepository.getCommonFilms(userId, friendId);
-    /*for (Film film: films) {
+    /*for (Film film: films){
         List<Director> directors = filmDirectorRepository.getDirectorsIdByFilmId(film.getId())
                 .stream()
                 .map(directorRepository::getDirectorById)
