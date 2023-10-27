@@ -60,7 +60,7 @@ public class BaseFilmService implements FilmService {
         return filmRepository.getPopularFilms(count);
     }
 
-    public List<Film> getCommonFilms(long userId, long friendId) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> films = filmRepository.getCommonFilms(userId, friendId);
     /*for (Film film: films) {
         List<Director> directors = filmDirectorRepository.getDirectorsIdByFilmId(film.getId())

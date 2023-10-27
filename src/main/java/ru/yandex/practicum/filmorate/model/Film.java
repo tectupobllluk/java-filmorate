@@ -11,6 +11,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Setter
 public class Film {
     @EqualsAndHashCode.Exclude
     private Long id;
