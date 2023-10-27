@@ -59,4 +59,16 @@ public class BaseFilmService implements FilmService {
     public List<Film> getPopularFilms(Long count) {
         return filmRepository.getPopularFilms(count);
     }
+
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> films = filmRepository.getCommonFilms(userId, friendId);
+    /*for (Film film: films) {
+        List<Director> directors = filmDirectorRepository.getDirectorsIdByFilmId(film.getId())
+                .stream()
+                .map(directorRepository::getDirectorById)
+                .collect(Collectors.toList());
+        film.setDirectors(directors);
+    }*/
+        return films;
+    }
 }
