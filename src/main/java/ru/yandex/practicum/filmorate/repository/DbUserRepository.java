@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
+import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -23,6 +25,8 @@ import java.util.Optional;
 public class DbUserRepository implements UserRepository {
 
     private final JdbcOperations jdbcTemplate;
+
+    private final FeedSaveDB feedSaveDB;
 
     @Override
     public void saveUser(User user) {
@@ -93,7 +97,9 @@ public class DbUserRepository implements UserRepository {
     public void addFriend(User user, User friend) {
         final String sqlQuery = "INSERT INTO friends (user_id, friend_id) " +
                 "VALUES (?, ?);";
+         feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.FRIEND), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD), friend.getId());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
+
     }
 
     @Override
@@ -101,7 +107,9 @@ public class DbUserRepository implements UserRepository {
         final String sqlQuery = "DELETE FROM friends " +
                 "WHERE (user_id = ? AND friend_id = ?) " +
                 "OR (user_id = ? AND friend_id = ?);";
+        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.FRIEND), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), friend.getId());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId(), friend.getId(), user.getId());
+
     }
 
     @Override

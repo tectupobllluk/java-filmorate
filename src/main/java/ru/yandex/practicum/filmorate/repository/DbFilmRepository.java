@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
+import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -28,6 +30,7 @@ public class DbFilmRepository implements FilmRepository {
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
+    private final FeedSaveDB feedSaveDB;
 
     @Override
     public Film saveFilm(Film film) {
@@ -110,12 +113,15 @@ public class DbFilmRepository implements FilmRepository {
         final String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
                 "VALUES (?, ?);";
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
+        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.LIKE), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD), film.getId());
+
     }
 
     @Override
     public void deleteLike(Film film, User user) {
         final String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?;";
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
+        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.LIKE), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), film.getId());
     }
 
     @Override

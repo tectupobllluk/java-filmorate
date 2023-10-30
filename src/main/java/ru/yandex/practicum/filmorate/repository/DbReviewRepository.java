@@ -6,18 +6,22 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
+import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
 import ru.yandex.practicum.filmorate.model.Review;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class DbReviewRepository implements ReviewRepository {
+
     private final ReviewLikesRepository reviewLikesRepository;
+    private final FeedSaveDB feedSaveDB;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -41,8 +45,9 @@ public class DbReviewRepository implements ReviewRepository {
                 },
                 keyHolder
         );
-
-
+        int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        review.setReviewId(reviewId);
+        feedSaveDB.saveEvent(review.getUserId(), feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD),reviewId);
         return getReviewById(keyHolder.getKey().intValue());
     }
 
@@ -57,15 +62,22 @@ public class DbReviewRepository implements ReviewRepository {
                 updatedReview.getContent(),
                 updatedReview.getIsPositive(),
                 updatedReview.getReviewId());
-
+        feedSaveDB.saveEvent(updatedReview.getReviewId(), feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.UPDATE),updatedReview.getReviewId());
         return getReviewById(updatedReview.getReviewId()).orElse(null);
     }
 
     @Override
     public void deleteReview(long reviewId) {
         final String sql = "DELETE FROM reviews WHERE review_id = ?;";
-
-        jdbcTemplate.update(sql, reviewId);
+        Optional<Review> optionalReview = getReviewById(reviewId);
+        if (optionalReview.isPresent()) {
+            Review review = optionalReview.get();
+            long userId = review.getUserId();
+            jdbcTemplate.update(sql, reviewId);
+            feedSaveDB.saveEvent(userId, feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), reviewId);
+        } else {
+            throw new IllegalArgumentException("Review not found with id: " + reviewId);
+        }
     }
 
     @Override

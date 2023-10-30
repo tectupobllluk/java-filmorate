@@ -3,11 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
-
 import java.util.List;
 
 @Service
@@ -15,8 +12,6 @@ import java.util.List;
 public class BaseUserService implements UserService {
 
     private final UserRepository userRepository;
-
-    private final FilmRepository filmRepository;
 
     @Override
     public void saveUser(User user) {
@@ -31,14 +26,6 @@ public class BaseUserService implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
-    }
-
-    @Override
-    public void deleteUser(long userId) {
-        userRepository.getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
-
-        userRepository.deleteUser(userId);
     }
 
     @Override
@@ -81,10 +68,4 @@ public class BaseUserService implements UserService {
         return userRepository.getFriends(user);
     }
 
-    @Override
-    public List<Film> getFilmRecommendations(int userId) {
-        User user =  this.getUser(userId);
-        return filmRepository.getRecommendedFilms(user.getId());
-
-    }
 }

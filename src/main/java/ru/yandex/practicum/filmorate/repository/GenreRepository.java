@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-
 import java.util.List;
 
 public interface GenreRepository {
@@ -16,4 +15,5 @@ public interface GenreRepository {
     void insertGenres(Film film);
 
     void removeFilmGenres(Film film);
+
 }
