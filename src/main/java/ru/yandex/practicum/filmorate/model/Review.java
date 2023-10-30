@@ -13,7 +13,6 @@ public class Review {
 
     private long reviewId;
 
-    @Size(min = 1, max = 500)
     @NotBlank(message = "Не указан content")
     private String content;
 

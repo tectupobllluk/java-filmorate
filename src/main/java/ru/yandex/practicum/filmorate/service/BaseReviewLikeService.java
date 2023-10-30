@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.repository.ReviewLikesRepository;
@@ -8,19 +8,11 @@ import ru.yandex.practicum.filmorate.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class BaseReviewLikeService implements ReviewLikeService {
-    ReviewLikesRepository reviewLikesRepository;
-
-    ReviewRepository reviewRepository;
-    UserRepository userRepository;
-
-    @Autowired
-    public BaseReviewLikeService(ReviewLikesRepository reviewLikesRepository, ReviewRepository reviewRepository,
-                                 UserRepository userRepository) {
-        this.reviewLikesRepository = reviewLikesRepository;
-        this.userRepository = userRepository;
-        this.reviewRepository = reviewRepository;
-    }
+    private final ReviewLikesRepository reviewLikesRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void likeReview(long reviewId, long userId) {

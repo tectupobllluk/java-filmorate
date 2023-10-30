@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.BadRequestException;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -13,13 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/reviews")
 @Slf4j
+@RequiredArgsConstructor
 public class ReviewController {
-    ReviewService reviewService;
-
-    @Autowired
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
+    private final ReviewService reviewService;
 
     @PostMapping
     public Review createReview(@RequestBody @Valid Review review) {
@@ -46,14 +42,9 @@ public class ReviewController {
     }
 
     @GetMapping()
-    public List<Review> getReviewByFilmId(
-            @RequestParam(value = "filmId", defaultValue = "0") Long filmId,
-            @RequestParam(value = "count", defaultValue = "10") long count
-    ) {
+    public List<Review> getReviewByFilmId(@RequestParam(value = "filmId", defaultValue = "0") Long filmId, @RequestParam(value = "count", defaultValue = "10") long count) {
         if (count <= 0) {
-            throw new BadRequestException(
-                    "If you don't want to specify the count, just don't specify it."
-            );
+            throw new BadRequestException("If you don't want to specify the count, just don't specify it.");
         }
         return reviewService.getReviewByFilmId(filmId, count);
     }

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -11,19 +11,11 @@ import ru.yandex.practicum.filmorate.repository.UserRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BaseReviewService implements ReviewService {
-    ReviewRepository reviewRepository;
-    FilmRepository filmRepository;
-    UserRepository userRepository;
-
-    @Autowired
-    public BaseReviewService(ReviewRepository reviewRepository,
-                             FilmRepository filmRepository,
-                             UserRepository userRepository) {
-        this.reviewRepository = reviewRepository;
-        this.filmRepository = filmRepository;
-        this.userRepository = userRepository;
-    }
+    private final ReviewRepository reviewRepository;
+    private final FilmRepository filmRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Review createReview(Review review) {

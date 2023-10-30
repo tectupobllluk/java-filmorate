@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.repository;
 
-import org.springframework.context.annotation.Primary;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,21 +15,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Primary
+@RequiredArgsConstructor
 public class DbReviewRepository implements ReviewRepository {
     private final ReviewLikesRepository reviewLikesRepository;
     private final JdbcTemplate jdbcTemplate;
-
-    public DbReviewRepository(ReviewLikesRepository reviewLikesRepository, JdbcTemplate jdbcTemplate) {
-        this.reviewLikesRepository = reviewLikesRepository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Optional<Review> createReview(Review review) {
         String sqlQuery =
                 "INSERT INTO reviews (content_review, is_positive, film_id, user_id) " +
-                        "VALUES (?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?);";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -56,7 +51,7 @@ public class DbReviewRepository implements ReviewRepository {
 
         String sql = "UPDATE reviews SET " +
                 "content_review = ?, is_positive = ? " +
-                "WHERE review_id = ?";
+                "WHERE review_id = ?;";
 
         jdbcTemplate.update(sql,
                 updatedReview.getContent(),
@@ -68,7 +63,7 @@ public class DbReviewRepository implements ReviewRepository {
 
     @Override
     public void deleteReview(long reviewId) {
-        final String sql = "DELETE FROM reviews WHERE review_id = ?";
+        final String sql = "DELETE FROM reviews WHERE review_id = ?;";
 
         jdbcTemplate.update(sql, reviewId);
     }
@@ -94,7 +89,7 @@ public class DbReviewRepository implements ReviewRepository {
                 "  FROM useful_review u " +
                 "  WHERE u.review_id = r.review_id" +
                 ") DESC " +
-                "LIMIT ?";
+                "LIMIT ?;";
 
 
         return jdbcTemplate.query(sql, new ReviewRowMapper(), count);
@@ -110,7 +105,7 @@ public class DbReviewRepository implements ReviewRepository {
                 "  FROM useful_review u " +
                 "  WHERE u.review_id = r.review_id" +
                 ") DESC " +
-                "LIMIT ?";
+                "LIMIT ?;";
 
         return jdbcTemplate.query(sql, new ReviewRowMapper(), filmId, count);
     }
