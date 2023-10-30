@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.feed.Event;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
+import ru.yandex.practicum.filmorate.service.event.EventService;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BaseUserService implements UserService {
     private final UserRepository userRepository;
+    private final EventService eventService;
 
     @Override
     public void saveUser(User user) {
@@ -66,5 +69,11 @@ public class BaseUserService implements UserService {
         User user = userRepository.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
         return userRepository.getFriends(user);
+    }
+
+    @Override
+    public List<Event> getFeed(int id) {
+       User user = this.getUser(id);
+        return eventService.getFeed(user.getId());
     }
 }
