@@ -18,6 +18,8 @@ public interface UserRepository {
 
     void deleteFriend(User user, User friend);
 
+    void deleteUser(long userId);
+
     List<User> getCommonFriends(User user, User friend);
 
     List<User> getFriends(User user);
