@@ -59,4 +59,9 @@ public class BaseFilmService implements FilmService {
     public List<Film> getPopularFilms(Long count) {
         return filmRepository.getPopularFilms(count);
     }
+
+    @Override
+    public List<Film> getAllDirectorFilms(Long directorId, String sortBy) {
+        return filmRepository.getAllDirectorFilms(directorId, sortBy);
+    }
 }
