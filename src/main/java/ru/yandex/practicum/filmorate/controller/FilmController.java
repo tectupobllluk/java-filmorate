@@ -57,8 +57,14 @@ public class FilmController {
         return filmService.getFilm(id);
     }
 
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getAllDirectorFilms(@PathVariable long directorId, @RequestParam String sortBy) {
+        return filmService.getAllDirectorFilms(directorId, sortBy);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable long id) {
-         filmService.deleteFilm(id);
+        filmService.deleteFilm(id);
     }
 }

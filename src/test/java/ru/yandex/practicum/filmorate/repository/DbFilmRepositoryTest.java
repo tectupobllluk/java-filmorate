@@ -31,7 +31,8 @@ class DbFilmRepositoryTest {
         Mpa mpa = new Mpa(1, "G");
 
         filmRepository.saveFilm(new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList()));
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList()));
         Optional<Film> filmOptional = filmRepository.getFilm(1);
 
         assertThat(filmOptional)
@@ -71,9 +72,11 @@ class DbFilmRepositoryTest {
         Mpa newMpa = new Mpa(2, "PG");
 
         filmRepository.saveFilm(new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList()));
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList()));
         filmRepository.updateFilm(new Film(1L, "newName", "newDescription",
-                LocalDate.of(2029, 2, 9), 360, newMpa, Collections.emptyList()));
+                LocalDate.of(2029, 2, 9), 360, newMpa,
+                Collections.emptyList(), Collections.emptyList()));
         Optional<Film> newFilmOptional = filmRepository.getFilm(1);
 
         assertThat(newFilmOptional)
@@ -113,10 +116,12 @@ class DbFilmRepositoryTest {
         Mpa newMpa = new Mpa(2, "PG");
 
         Film film = new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList());
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(film);
         Film secondFilm = new Film(2L, "newName", "newDescription",
-                LocalDate.of(2029, 2, 9), 360, newMpa, Collections.emptyList());
+                LocalDate.of(2029, 2, 9), 360, newMpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(secondFilm);
         List<Film> filmList = filmRepository.getAllFilms();
 
@@ -130,7 +135,8 @@ class DbFilmRepositoryTest {
         Mpa mpa = new Mpa(1, "G");
 
         filmRepository.saveFilm(new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList()));
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList()));
         Optional<Film> filmOptional = filmRepository.getFilm(1);
 
         assertThat(filmOptional)
@@ -174,10 +180,12 @@ class DbFilmRepositoryTest {
         Mpa newMpa = new Mpa(2, "PG");
 
         Film firstFilm = new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList());
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(firstFilm);
         Film secondFilm = new Film(2L, "newName", "newDescription",
-                LocalDate.of(2020, 2, 9), 360, newMpa, Collections.emptyList());
+                LocalDate.of(2020, 2, 9), 360, newMpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(secondFilm);
         filmRepository.addLike(secondFilm, user);
         List<Film> filmList = filmRepository.getPopularFilms(1L);
@@ -196,10 +204,12 @@ class DbFilmRepositoryTest {
         Mpa newMpa = new Mpa(2, "PG");
 
         Film firstFilm = new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList());
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(firstFilm);
         Film secondFilm = new Film(2L, "secondName", "secondDescription",
-                LocalDate.of(2020, 2, 9), 360, newMpa, Collections.emptyList());
+                LocalDate.of(2020, 2, 9), 360, newMpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(secondFilm);
         filmRepository.addLike(secondFilm, user);
         filmRepository.deleteLike(secondFilm, user);
@@ -223,13 +233,16 @@ class DbFilmRepositoryTest {
         Mpa thirdMpa = new Mpa(2, "PG");
 
         Film firstFilm = new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, mpa, Collections.emptyList());
+                LocalDate.of(2000, 2, 9), 180, mpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(firstFilm);
         Film secondFilm = new Film(2L, "secondName", "secondDescription",
-                LocalDate.of(2020, 2, 9), 360, secondMpa, Collections.emptyList());
+                LocalDate.of(2020, 2, 9), 360, secondMpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(secondFilm);
         Film thirdFilm = new Film(3L, "thirdName", "thirdDescription",
-                LocalDate.of(2010, 2, 9), 200, thirdMpa, Collections.emptyList());
+                LocalDate.of(2010, 2, 9), 200, thirdMpa,
+                Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(thirdFilm);
         filmRepository.addLike(thirdFilm, user);
         filmRepository.addLike(thirdFilm, secondUser);

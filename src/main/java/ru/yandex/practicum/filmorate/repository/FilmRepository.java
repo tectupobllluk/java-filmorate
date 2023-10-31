@@ -22,4 +22,6 @@ public interface FilmRepository {
     void deleteLike(Film film, User user);
 
     List<Film> getPopularFilms(Long count);
+
+    List<Film> getAllDirectorFilms(Long directorId, String sortBy);
 }

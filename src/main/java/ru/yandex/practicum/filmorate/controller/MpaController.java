@@ -24,7 +24,7 @@ public class MpaController {
     }
 
     @GetMapping
-    public List<Mpa> getAllUsers() {
+    public List<Mpa> getAllMpas() {
         return mpaService.getAllMpa();
     }
 }

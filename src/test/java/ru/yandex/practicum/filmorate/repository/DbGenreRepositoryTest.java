@@ -45,7 +45,8 @@ class DbGenreRepositoryTest {
     void loadFilmGenre() {
         List<Genre> genres = List.of(new Genre(1, "Комедия"), new Genre(6, "Боевик"));
         filmRepository.saveFilm(new Film(1L, "name", "description",
-                LocalDate.of(2000, 2, 9), 180, new Mpa(1, "G"), genres));
+                LocalDate.of(2000, 2, 9), 180, new Mpa(1, "G"), genres,
+                Collections.emptyList()));
 
         assertEquals(genres, genreRepository.loadFilmGenre(1L));
     }
@@ -55,11 +56,11 @@ class DbGenreRepositoryTest {
         List<Genre> genres = List.of(new Genre(1, "Комедия"), new Genre(6, "Боевик"));
         Film film = new Film(1L, "name", "description",
                 LocalDate.of(2000, 2, 9), 180,
-                new Mpa(1, "G"), Collections.emptyList());
+                new Mpa(1, "G"), Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(film);
         filmRepository.updateFilm(new Film(1L, "name", "description",
                 LocalDate.of(2000, 2, 9), 180,
-                new Mpa(1, "G"), genres));
+                new Mpa(1, "G"), genres, Collections.emptyList()));
 
         assertEquals(genres, genreRepository.loadFilmGenre(1L));
     }
@@ -69,11 +70,11 @@ class DbGenreRepositoryTest {
         List<Genre> genres = List.of(new Genre(1, "Комедия"), new Genre(6, "Боевик"));
         Film film = new Film(1L, "name", "description",
                 LocalDate.of(2000, 2, 9), 180,
-                new Mpa(1, "G"), genres);
+                new Mpa(1, "G"), genres, Collections.emptyList());
         filmRepository.saveFilm(film);
         filmRepository.updateFilm(new Film(1L, "name", "description",
                 LocalDate.of(2000, 2, 9), 180,
-                new Mpa(1, "G"), Collections.emptyList()));
+                new Mpa(1, "G"), Collections.emptyList(), Collections.emptyList()));
 
         assertEquals(Collections.emptyList(), genreRepository.loadFilmGenre(1L));
     }
