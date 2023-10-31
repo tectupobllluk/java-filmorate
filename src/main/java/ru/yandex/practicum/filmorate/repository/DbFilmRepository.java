@@ -99,6 +99,13 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     @Override
+    public void deleteFilm(long filmId) {
+        final String sqlQuery = "DELETE FROM films " +
+                "WHERE film_id = ?;";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    @Override
     public void addLike(Film film, User user) {
         final String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
                 "VALUES (?, ?);";
