@@ -84,9 +84,6 @@ public class BaseFilmService implements FilmService {
     @Override
     public List<Film> searchFilms(String query, String fields) {
         List<Film> films = filmRepository.searchFilms(query, fields);
-        for (Film film : films) {
-            film.setDirectors(directorRepository.loadFilmDirector(film.getId()));
-        }
         return films;
     }
 }

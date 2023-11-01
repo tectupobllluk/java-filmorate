@@ -15,7 +15,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -190,7 +189,7 @@ public class DbFilmRepository implements FilmRepository {
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
                 "WHERE UPPER(f.name) LIKE CONCAT('%', UPPER(?), '%') " +
                 "GROUP BY f.film_id " +
-                "ORDER BY f.film_id DESC ";
+                "ORDER BY f.film_id DESC; ";
 
         String sqlDirectorName = "SELECT f.film_id, " +
                 "f.name, " +
@@ -207,7 +206,7 @@ public class DbFilmRepository implements FilmRepository {
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
                 "WHERE UPPER(d.director_name) LIKE CONCAT('%', UPPER(?), '%') " +
                 "GROUP BY f.film_id " +
-                "ORDER BY f.film_id DESC ";
+                "ORDER BY f.film_id DESC; ";
 
         String sqlFilmAndDirector = "SELECT f.film_id, " +
                 "f.name, " +
@@ -225,14 +224,13 @@ public class DbFilmRepository implements FilmRepository {
                 "WHERE UPPER(f.name) LIKE CONCAT('%', UPPER(?), '%') OR " +
                 "UPPER(d.director_name) LIKE CONCAT('%', UPPER(?),  '%') " +
                 "GROUP BY f.film_id " +
-                "ORDER BY f.film_id DESC ";
+                "ORDER BY f.film_id DESC; ";
 
-        String[] parameters = fields.split(",");
-        if (Arrays.asList(parameters).contains("title") && Arrays.asList(parameters).contains("director")) {
+        if (fields.contains("title") && fields.contains("director")) {
             return jdbcTemplate.query(sqlFilmAndDirector, new FilmRowMapper(), query, query);
-        } else if (Arrays.asList(parameters).contains("title")) {
+        } else if (fields.contains("title")) {
             return jdbcTemplate.query(sqlFilmName, new FilmRowMapper(), query);
-        } else if (Arrays.asList(parameters).contains("director")) {
+        } else if (fields.contains("director")) {
             return jdbcTemplate.query(sqlDirectorName, new FilmRowMapper(), query);
         } else {
             throw new IllegalArgumentException("Неизвестное поле для поиска " + fields + ". Варианты: [director, title]");
