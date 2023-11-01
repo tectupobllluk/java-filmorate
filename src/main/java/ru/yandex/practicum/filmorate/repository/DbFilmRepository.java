@@ -186,8 +186,8 @@ public class DbFilmRepository implements FilmRepository {
                 "m.mpa_name, " +
                 "COUNT(l.user_id) AS film_likes " +
                 "FROM films AS f " +
-                "INNER JOIN film_directors AS fd ON f.film_id = fd.film_id " +
-                "INNER JOIN directors AS d ON d.director_id = fd.director_id " +
+                "LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON d.director_id = fd.director_id " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
                 "WHERE UPPER(d.director_name) LIKE CONCAT('%', UPPER(?), '%') " +
@@ -203,11 +203,11 @@ public class DbFilmRepository implements FilmRepository {
                 "m.mpa_name, " +
                 "COUNT(l.user_id) AS film_likes " +
                 "FROM films AS f " +
-                "INNER JOIN film_directors AS fd ON f.film_id = fd.film_id " +
-                "INNER JOIN directors AS d ON d.director_id = fd.director_id " +
+                "LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON d.director_id = fd.director_id " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
-                "WHERE UPPER(d.director_name) LIKE CONCAT('%', UPPER(?), '%') OR " +
+                "WHERE UPPER(f.name) LIKE CONCAT('%', UPPER(?), '%') OR " +
                 "UPPER(d.director_name) LIKE CONCAT('%', UPPER(?),  '%') " +
                 "GROUP BY f.film_id " +
                 "ORDER BY f.film_id DESC ";
