@@ -119,15 +119,48 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        final String sqlQuery = "SELECT f.* " +
-                "FROM films AS f " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?;";
-
-        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
+    public List<Film> getPopularFilms(Long count, Integer genreId, Integer year) {
+        if (Objects.equals(genreId, year)) {
+            final String sqlQuery = "SELECT f.* " +
+                    "FROM films AS f " +
+                    "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY COUNT(l.user_id) DESC " +
+                    "LIMIT ?;";
+            return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
+        } else {
+            if (genreId == -1) {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM films AS f " +
+                        "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                        "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS DATE)) = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY COUNT(l.user_id) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), year, count);
+            } else if (year == -1) {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM films AS f " +
+                        "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                        "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                        "WHERE fg.genre_id = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY COUNT(l.user_id) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), genreId, count);
+            } else {
+                final String sqlQuery = "SELECT f.* " +
+                        "FROM films AS f " +
+                        "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                        "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                        "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS DATE)) = ? " +
+                        "AND fg.genre_id = ? " +
+                        "GROUP BY f.film_id " +
+                        "ORDER BY COUNT(l.user_id) DESC " +
+                        "LIMIT ?;";
+                return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), year, genreId, count);
+            }
+        }
     }
 
     @Override

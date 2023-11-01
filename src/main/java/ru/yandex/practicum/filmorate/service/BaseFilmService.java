@@ -64,8 +64,8 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        return filmRepository.getPopularFilms(count);
+    public List<Film> getPopularFilms(Long count, Integer genreId, Integer year) {
+        return filmRepository.getPopularFilms(count, genreId, year);
     }
 
     @Override
