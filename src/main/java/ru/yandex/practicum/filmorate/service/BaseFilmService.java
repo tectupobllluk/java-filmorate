@@ -32,6 +32,14 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
+    public void deleteFilm(long filmId) {
+        filmRepository.getFilm(filmId)
+                .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
+
+        filmRepository.deleteFilm(filmId);
+    }
+
+    @Override
     public void addLike(long userId, long filmId) {
         User user = userRepository.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
@@ -58,6 +66,11 @@ public class BaseFilmService implements FilmService {
     @Override
     public List<Film> getPopularFilms(Long count) {
         return filmRepository.getPopularFilms(count);
+    }
+
+    @Override
+    public List<Film> getAllDirectorFilms(Long directorId, String sortBy) {
+        return filmRepository.getAllDirectorFilms(directorId, sortBy);
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {

@@ -27,6 +27,7 @@ public class DbFilmRepository implements FilmRepository {
     private final JdbcOperations jdbcTemplate;
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
+    private final DirectorRepository directorRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -45,6 +46,7 @@ public class DbFilmRepository implements FilmRepository {
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         genreRepository.insertGenres(film);
+        directorRepository.insertDirectors(film);
         return getFilm(Objects.requireNonNull(keyHolder.getKey()).longValue())
                 .orElseThrow(() -> new NotFoundException("Film not found with id = " +
                         Objects.requireNonNull(keyHolder.getKey()).longValue()));
@@ -66,8 +68,12 @@ public class DbFilmRepository implements FilmRepository {
             throw new NotFoundException("Unknown film with " + film.getId() + " id!");
         }
         genreRepository.removeFilmGenres(film);
+        directorRepository.removeFilmDirectors(film);
         if (film.getGenres().size() > 0) {
             genreRepository.insertGenres(film);
+        }
+        if (film.getDirectors().size() > 0) {
+            directorRepository.insertDirectors(film);
         }
         return getFilm(film.getId())
                 .orElseThrow(() -> new NotFoundException("Film not found with id = " + film.getId()));
@@ -90,6 +96,13 @@ public class DbFilmRepository implements FilmRepository {
             return Optional.empty();
         }
         return Optional.of(films.get(0));
+    }
+
+    @Override
+    public void deleteFilm(long filmId) {
+        final String sqlQuery = "DELETE FROM films " +
+                "WHERE film_id = ?;";
+        jdbcTemplate.update(sqlQuery, filmId);
     }
 
     @Override
@@ -118,6 +131,31 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     @Override
+    public List<Film> getAllDirectorFilms(Long directorId, String sortBy) {
+        directorRepository.getDirector(directorId)
+                .orElseThrow(() -> new NotFoundException("Director not found with id = " + directorId));
+        final String sqlQuery;
+        if (sortBy.equals("likes")) {
+            sqlQuery = "SELECT f.* " +
+                    "FROM films AS f " +
+                    "RIGHT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                    "LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+                    "WHERE fd.director_id = ? " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY COUNT(l.user_id);";
+        } else {
+            sqlQuery = "SELECT f.* " +
+                    "FROM films AS f " +
+                    "RIGHT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                    "WHERE fd.director_id = ? " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY EXTRACT(YEAR FROM CAST(f.release_date AS DATE));";
+        }
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), directorId);
+    }
+
+    @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         String sqlQuery = "SELECT f.* " +
                 "FROM films AS f, likes AS l1, likes AS l2 " +
@@ -143,6 +181,7 @@ public class DbFilmRepository implements FilmRepository {
                     .duration(rs.getInt("duration"))
                     .mpa(mpaRepository.getMpa(rs.getInt("mpa_id")))
                     .genres(genreRepository.loadFilmGenre(rs.getLong("film_id")))
+                    .directors(directorRepository.loadFilmDirector(rs.getLong("film_id")))
                     .build();
         }
     }

@@ -15,11 +15,15 @@ public interface FilmRepository {
 
     Optional<Film> getFilm(long filmId);
 
+     void deleteFilm(long filmId);
+
     void addLike(Film film, User user);
 
     void deleteLike(Film film, User user);
 
     List<Film> getPopularFilms(Long count);
+
+    List<Film> getAllDirectorFilms(Long directorId, String sortBy);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
 }
