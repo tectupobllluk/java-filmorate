@@ -188,7 +188,7 @@ class DbFilmRepositoryTest {
                 Collections.emptyList(), Collections.emptyList());
         filmRepository.saveFilm(secondFilm);
         filmRepository.addLike(secondFilm, user);
-        List<Film> filmList = filmRepository.getPopularFilms(1L);
+        List<Film> filmList = filmRepository.getPopularFilms(1L, -1, -1);
 
         assertEquals(1, filmList.size());
         assertEquals(secondFilm, filmList.get(0));
@@ -213,7 +213,7 @@ class DbFilmRepositoryTest {
         filmRepository.saveFilm(secondFilm);
         filmRepository.addLike(secondFilm, user);
         filmRepository.deleteLike(secondFilm, user);
-        List<Film> filmList = filmRepository.getPopularFilms(1L);
+        List<Film> filmList = filmRepository.getPopularFilms(1L, -1, -1);
 
         assertEquals(1, filmList.size());
         assertEquals(firstFilm, filmList.get(0));
@@ -247,7 +247,7 @@ class DbFilmRepositoryTest {
         filmRepository.addLike(thirdFilm, user);
         filmRepository.addLike(thirdFilm, secondUser);
         filmRepository.addLike(secondFilm, user);
-        List<Film> filmList = filmRepository.getPopularFilms(3L);
+        List<Film> filmList = filmRepository.getPopularFilms(3L, -1, -1);
 
         assertEquals(3, filmList.size());
         assertEquals(thirdFilm, filmList.get(0));

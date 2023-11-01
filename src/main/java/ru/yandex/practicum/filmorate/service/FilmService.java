@@ -19,7 +19,7 @@ public interface FilmService {
 
     Film getFilm(long filmId);
 
-    List<Film> getPopularFilms(Long count);
+    List<Film> getPopularFilms(Long count, Integer genreId, Integer year);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
 
