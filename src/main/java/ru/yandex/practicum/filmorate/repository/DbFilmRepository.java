@@ -157,6 +157,21 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sqlQuery = "SELECT f.* " +
+                "FROM films AS f, likes AS l1, likes AS l2 " +
+                "WHERE f.film_id = l1.film_id " +
+                "AND f.film_id = l2.film_id " +
+                "AND l1.user_id = ? " +
+                "AND l2.user_id = ? " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(*) DESC;";
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, friendId);
+
+    }
+
+    @Override
     public List<Film> searchFilms(String query, String fields) {
         if (query.isEmpty()) {
             return getAllFilms();

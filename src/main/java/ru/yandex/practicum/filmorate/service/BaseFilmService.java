@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -77,10 +76,13 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
-    public List<Film> searchFilms(String query, String fields) {
-        List<String> allowed = List.of("title", "director");
-        List<String> inputFields = Arrays.asList(fields.split(","));
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> films = filmRepository.getCommonFilms(userId, friendId);
+        return films;
+    }
 
+    @Override
+    public List<Film> searchFilms(String query, String fields) {
         List<Film> films = filmRepository.searchFilms(query, fields);
         for (Film film : films) {
             film.setDirectors(directorRepository.loadFilmDirector(film.getId()));
