@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class BaseFilmService implements FilmService {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
+    private final DirectorRepository directorRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -75,13 +77,9 @@ public class BaseFilmService implements FilmService {
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> films = filmRepository.getCommonFilms(userId, friendId);
-    /*for (Film film: films){
-        List<Director> directors = filmDirectorRepository.getDirectorsIdByFilmId(film.getId())
-                .stream()
-                .map(directorRepository::getDirectorById)
-                .collect(Collectors.toList());
-        film.setDirectors(directors);
-    }*/
+        for (Film film: films){
+            film.setDirectors(directorRepository.loadFilmDirector(film.getId()));
+        }
         return films;
     }
 }
