@@ -208,7 +208,7 @@ public class DbFilmRepository implements FilmRepository {
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
                 "WHERE UPPER(d.director_name) LIKE CONCAT('%', UPPER(?), '%') OR " +
-                "UPPER(d.name) LIKE CONCAT('%', UPPER(?),  '%') " +
+                "UPPER(d.director_name) LIKE CONCAT('%', UPPER(?),  '%') " +
                 "GROUP BY f.film_id " +
                 "ORDER BY f.film_id DESC ";
 
