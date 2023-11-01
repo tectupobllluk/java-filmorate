@@ -29,14 +29,6 @@ public class BaseUserService implements UserService {
     }
 
     @Override
-    public void deleteUser(long userId) {
-        userRepository.getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
-
-        userRepository.deleteUser(userId);
-    }
-
-    @Override
     public User getUser(long userId) {
         return userRepository.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));

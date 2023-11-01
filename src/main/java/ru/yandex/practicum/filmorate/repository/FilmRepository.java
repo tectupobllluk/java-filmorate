@@ -15,17 +15,9 @@ public interface FilmRepository {
 
     Optional<Film> getFilm(long filmId);
 
-    void deleteFilm(long filmId);
-
     void addLike(Film film, User user);
 
     void deleteLike(Film film, User user);
 
-    List<Film> getPopularFilms(Long count, Integer genreId, Integer year);
-
-    List<Film> getAllDirectorFilms(Long directorId, String sortBy);
-
-    List<Film> getCommonFilms(Long userId, Long friendId);
-
-    List<Film> searchFilms(String query, String fields);
+    List<Film> getPopularFilms(Long count);
 }
