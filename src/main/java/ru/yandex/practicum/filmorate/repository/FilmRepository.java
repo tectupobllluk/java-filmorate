@@ -26,4 +26,6 @@ public interface FilmRepository {
     List<Film> getAllDirectorFilms(Long directorId, String sortBy);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Film> searchFilms(String query, String fields);
 }

@@ -203,6 +203,73 @@ public class DbFilmRepository implements FilmRepository {
 
     }
 
+    @Override
+    public List<Film> searchFilms(String query, String fields) {
+        if (query.isEmpty()) {
+            return getAllFilms();
+        }
+
+        String sqlFilmName = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "COUNT(l.user_id) AS film_likes " +
+                "FROM films AS f " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE UPPER(f.name) LIKE CONCAT('%', UPPER(?), '%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY f.film_id DESC; ";
+
+        String sqlDirectorName = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "COUNT(l.user_id) AS film_likes " +
+                "FROM films AS f " +
+                "LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON d.director_id = fd.director_id " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE UPPER(d.director_name) LIKE CONCAT('%', UPPER(?), '%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY f.film_id DESC; ";
+
+        String sqlFilmAndDirector = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.mpa_id, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "m.mpa_name, " +
+                "COUNT(l.user_id) AS film_likes " +
+                "FROM films AS f " +
+                "LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors AS d ON d.director_id = fd.director_id " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE UPPER(f.name) LIKE CONCAT('%', UPPER(?), '%') OR " +
+                "UPPER(d.director_name) LIKE CONCAT('%', UPPER(?),  '%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY f.film_id DESC; ";
+
+        if (fields.contains("title") && fields.contains("director")) {
+            return jdbcTemplate.query(sqlFilmAndDirector, new FilmRowMapper(), query, query);
+        } else if (fields.contains("title")) {
+            return jdbcTemplate.query(sqlFilmName, new FilmRowMapper(), query);
+        } else if (fields.contains("director")) {
+            return jdbcTemplate.query(sqlDirectorName, new FilmRowMapper(), query);
+        } else {
+            throw new IllegalArgumentException("Неизвестное поле для поиска " + fields + ". Варианты: [director, title]");
+        }
+    }
+
     private class FilmRowMapper implements RowMapper<Film> {
         @Override
         public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
