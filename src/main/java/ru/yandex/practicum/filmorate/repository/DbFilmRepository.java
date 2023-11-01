@@ -117,29 +117,6 @@ public class DbFilmRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
     }
 
-    public List<Film> getRecommendedFilms(long userId) {
-        final String sqlQuery = "SELECT films.*, m.* " +
-                "FROM films " +
-                "JOIN mpa AS m ON m.mpa_id = films.mpa_id " +
-                "WHERE films.film_id IN (SELECT DISTINCT film_id " +
-                "FROM likes " +
-                "WHERE user_id IN (SELECT user_id " +
-                "FROM (SELECT user_id, COUNT(*) matches " +
-                "FROM likes " +
-                "WHERE NOT user_id = ? " +
-                "AND film_id IN (SELECT film_id " +
-                "FROM likes " +
-                "WHERE user_id = ?) " +
-                "GROUP BY user_id " +
-                "ORDER BY count(*) DESC ) " +
-                "GROUP BY user_id " +
-                "HAVING matches = MAX(matches)) " +
-                "AND film_id NOT IN (SELECT film_id " +
-                "FROM likes " +
-                "WHERE user_id = ?))";
-        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, userId, userId);
-    }
-
     private class FilmRowMapper implements RowMapper<Film> {
         @Override
         public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
