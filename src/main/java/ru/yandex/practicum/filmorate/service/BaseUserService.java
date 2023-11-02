@@ -83,8 +83,7 @@ public class BaseUserService implements UserService {
 
     @Override
     public List<Film> getFilmRecommendations(int userId) {
-        User user =  this.getUser(userId);
+        User user = getUser(userId);
         return filmRepository.getRecommendedFilms(user.getId());
-
     }
 }

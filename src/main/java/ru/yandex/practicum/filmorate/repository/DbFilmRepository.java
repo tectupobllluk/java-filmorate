@@ -293,7 +293,6 @@ public class DbFilmRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, userId, userId);
     }
 
-
     private class FilmRowMapper implements RowMapper<Film> {
         @Override
         public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
