@@ -29,6 +29,6 @@ public interface FilmRepository {
 
     List<Film> searchFilms(String query, String fields);
 
-    List<Film> getRecommendedFilms(long id);
+    List<Film> getFilmsRecommendation(Long userId);
 
 }
