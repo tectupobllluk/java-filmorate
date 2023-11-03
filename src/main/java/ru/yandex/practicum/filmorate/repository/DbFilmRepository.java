@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -268,6 +269,44 @@ public class DbFilmRepository implements FilmRepository {
         } else {
             throw new IllegalArgumentException("Неизвестное поле для поиска " + fields + ". Варианты: [director, title]");
         }
+    }
+
+    @Override
+    public List<Film> getFilmsRecommendation(Long userId) {
+        final List<Long> ids = getUserLikes(userId);
+        if (ids.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        String sqlQuery = "SELECT user_id " +
+                "FROM likes " +
+                "WHERE film_id IN " +
+                "(" +
+                String.join(",", Collections.nCopies(ids.size(), "?")) +
+                ") " +
+                "GROUP BY user_id " +
+                "ORDER BY COUNT(*) DESC;";
+
+        List<Long> sqlUserId = jdbcTemplate.queryForList(sqlQuery, Long.class, ids.toArray());
+        if (sqlUserId.size() == 1) {
+            return Collections.emptyList();
+        }
+
+        sqlQuery = "SELECT f.* " +
+                "FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE l.user_id = ? " +
+                "AND NOT EXISTS " +
+                "(SELECT 1 FROM likes lu WHERE lu.user_id = ? AND lu.film_id = f.film_id);";
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), sqlUserId.get(1), userId);
+    }
+
+    private List<Long> getUserLikes(Long userId) {
+        final String sqlQuery = "SELECT l.film_id " +
+                "FROM likes AS l " +
+                "WHERE l.user_id = ?;";
+        return jdbcTemplate.queryForList(sqlQuery, Long.class, userId);
     }
 
     private class FilmRowMapper implements RowMapper<Film> {

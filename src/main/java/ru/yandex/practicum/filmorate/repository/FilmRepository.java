@@ -28,4 +28,7 @@ public interface FilmRepository {
     List<Film> getCommonFilms(Long userId, Long friendId);
 
     List<Film> searchFilms(String query, String fields);
+
+    List<Film> getFilmsRecommendation(Long userId);
+
 }
