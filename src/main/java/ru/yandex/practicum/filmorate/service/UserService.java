@@ -21,4 +21,6 @@ public interface UserService {
 
     List<User> getFriends(long userId);
 
+    List<Film> getFilmRecommendations(long userId);
+
 }

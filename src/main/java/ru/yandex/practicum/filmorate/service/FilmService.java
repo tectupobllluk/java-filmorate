@@ -26,4 +26,5 @@ public interface FilmService {
     List<Film> getAllDirectorFilms(Long directorId, String sortBy);
 
     List<Film> searchFilms(String query, String fields);
+
 }

@@ -68,4 +68,8 @@ public class BaseUserService implements UserService {
         return userRepository.getFriends(user);
     }
 
+    @Override
+    public List<Film> getFilmRecommendations(long userId) {
+        return filmRepository.getFilmsRecommendation(userId);
+    }
 }

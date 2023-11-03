@@ -17,6 +17,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -276,29 +277,43 @@ public class DbFilmRepository implements FilmRepository {
         }
     }
 
-    public List<Film> getRecommendedFilms(long userId) {
-        final String sqlQuery = "SELECT films.*, m.* " +
-                "FROM films " +
-                "JOIN mpa AS m ON m.mpa_id = films.mpa_id " +
-                "WHERE films.film_id IN (SELECT DISTINCT film_id " +
+    @Override
+    public List<Film> getFilmsRecommendation(Long userId) {
+        final List<Long> ids = getUserLikes(userId);
+        if (ids.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        String sqlQuery = "SELECT user_id " +
                 "FROM likes " +
-                "WHERE user_id IN (SELECT user_id " +
-                "FROM (SELECT user_id, COUNT(*) matches " +
-                "FROM likes " +
-                "WHERE NOT user_id = ? " +
-                "AND film_id IN (SELECT film_id " +
-                "FROM likes " +
-                "WHERE user_id = ?) " +
+                "WHERE film_id IN " +
+                "(" +
+                String.join(",", Collections.nCopies(ids.size(), "?")) +
+                ") " +
                 "GROUP BY user_id " +
-                "ORDER BY count(*) DESC ) " +
-                "GROUP BY user_id " +
-                "HAVING matches = MAX(matches)) " +
-                "AND film_id NOT IN (SELECT film_id " +
-                "FROM likes " +
-                "WHERE user_id = ?))";
-        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, userId, userId);
+                "ORDER BY COUNT(*) DESC;";
+
+        List<Long> sqlUserId = jdbcTemplate.queryForList(sqlQuery, Long.class, ids.toArray());
+        if (sqlUserId.size() == 1) {
+            return Collections.emptyList();
+        }
+
+        sqlQuery = "SELECT f.* " +
+                "FROM films AS f " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE l.user_id = ? " +
+                "AND NOT EXISTS " +
+                "(SELECT 1 FROM likes lu WHERE lu.user_id = ? AND lu.film_id = f.film_id);";
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), sqlUserId.get(1), userId);
     }
 
+    private List<Long> getUserLikes(Long userId) {
+        final String sqlQuery = "SELECT l.film_id " +
+                "FROM likes AS l " +
+                "WHERE l.user_id = ?;";
+        return jdbcTemplate.queryForList(sqlQuery, Long.class, userId);
+    }
 
     private class FilmRowMapper implements RowMapper<Film> {
         @Override
