@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,13 +14,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class DbFilmRepository implements FilmRepository {
 
@@ -29,6 +28,7 @@ public class DbFilmRepository implements FilmRepository {
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
+    private final FeedRepository feedRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -108,14 +108,20 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public void addLike(Film film, User user) {
-        final String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
-                "VALUES (?, ?);";
+        final String sqlQuery = "MERGE INTO likes AS l " +
+                "USING (SELECT CAST(? AS INTEGER), CAST(? AS INTEGER)) AS s (film_id, user_id) " +
+                "ON (l.film_id = s.film_id) AND (l.user_id = s.user_id) " +
+                "WHEN NOT MATCHED THEN " +
+                "INSERT (film_id, user_id) " +
+                "VALUES (s.film_id, s.user_id);";
+        feedRepository.updateFeed("LIKE", "ADD", user.getId(), film.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
     }
 
     @Override
     public void deleteLike(Film film, User user) {
         final String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?;";
+        feedRepository.updateFeed("LIKE", "REMOVE", user.getId(), film.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
     }
 

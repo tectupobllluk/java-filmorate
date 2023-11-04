@@ -63,13 +63,13 @@ public class UserController {
         return userService.getCommonFriends(otherId, id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable long id) {
-        userService.deleteUser(id);
-    }
-
     @GetMapping("/{id}/recommendations")
     public List<Film> getFilmRecommendations(@PathVariable long id) {
         return userService.getFilmRecommendations(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable long id) {
+        userService.deleteUser(id);
     }
 }

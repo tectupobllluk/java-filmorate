@@ -13,9 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BaseUserService implements UserService {
-
     private final UserRepository userRepository;
-
     private final FilmRepository filmRepository;
 
     @Override
@@ -31,14 +29,6 @@ public class BaseUserService implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
-    }
-
-    @Override
-    public void deleteUser(long userId) {
-        userRepository.getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
-
-        userRepository.deleteUser(userId);
     }
 
     @Override
@@ -84,5 +74,12 @@ public class BaseUserService implements UserService {
     @Override
     public List<Film> getFilmRecommendations(long userId) {
         return filmRepository.getFilmsRecommendation(userId);
+    }
+
+    @Override
+    public void deleteUser(long userId) {
+        userRepository.getUser(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
+        userRepository.deleteUser(userId);
     }
 }
