@@ -11,11 +11,20 @@ public interface FilmService {
 
     List<Film> getAllFilms();
 
+    void deleteFilm(long filmId);
+
     void addLike(long userId, long filmId);
 
     void deleteLike(long userId, long filmId);
 
     Film getFilm(long filmId);
 
-    List<Film> getPopularFilms(Long count);
+    List<Film> getPopularFilms(Long count, Integer genreId, Integer year);
+
+    List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Film> getAllDirectorFilms(Long directorId, String sortBy);
+
+    List<Film> searchFilms(String query, String fields);
+
 }

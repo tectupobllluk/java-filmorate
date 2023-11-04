@@ -72,6 +72,11 @@ public class BaseUserService implements UserService {
     }
 
     @Override
+    public List<Film> getFilmRecommendations(long userId) {
+        return filmRepository.getFilmsRecommendation(userId);
+    }
+
+    @Override
     public List<Event> getFeed(int id) {
        User user = this.getUser(id);
         return eventService.getFeed(user.getId());

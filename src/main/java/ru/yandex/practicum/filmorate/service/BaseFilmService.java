@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.DirectorRepository;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class BaseFilmService implements FilmService {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
+    private final DirectorRepository directorRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -29,6 +31,14 @@ public class BaseFilmService implements FilmService {
     @Override
     public List<Film> getAllFilms() {
         return filmRepository.getAllFilms();
+    }
+
+    @Override
+    public void deleteFilm(long filmId) {
+        filmRepository.getFilm(filmId)
+                .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
+
+        filmRepository.deleteFilm(filmId);
     }
 
     @Override
@@ -56,7 +66,24 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        return filmRepository.getPopularFilms(count);
+    public List<Film> getPopularFilms(Long count, Integer genreId, Integer year) {
+        return filmRepository.getPopularFilms(count, genreId, year);
+    }
+
+    @Override
+    public List<Film> getAllDirectorFilms(Long directorId, String sortBy) {
+        return filmRepository.getAllDirectorFilms(directorId, sortBy);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> films = filmRepository.getCommonFilms(userId, friendId);
+        return films;
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String fields) {
+        List<Film> films = filmRepository.searchFilms(query, fields);
+        return films;
     }
 }
