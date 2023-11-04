@@ -1,52 +1,103 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.EventOperationEnum;
-import ru.yandex.practicum.filmorate.model.EventTypeEnum;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Feed;
 
-import javax.validation.ValidationException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
-
-@Repository
+@Slf4j
+@Component
 @RequiredArgsConstructor
 public class DbFeedRepository implements FeedRepository {
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void saveEvent(long userId, int eventType, int operationType, long entityId) {
-        String sqlQuery = "INSERT INTO events (time_stamp, user_id, event_type, operation_type, entity_id) " +
-                "VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, Instant.now().toEpochMilli(), userId, eventType, operationType, entityId);
+    public List<Feed> getFeedList(int id) {
+        String sqlQuery = "SELECT * FROM events WHERE user_id = ?";
+
+        List<Feed> feed = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> rowMapperForFeed(rs), id);
+        return feed.stream()
+                .sorted(Comparator.comparing(Feed::getEventId))
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public int getEventTypeId(EventTypeEnum eventType) {
+    public Feed rowMapperForFeed(ResultSet rs) throws SQLException {
+        String eventType = rs.getString("event_type").toUpperCase();
         switch (eventType) {
-            case LIKE:
-                return 1;
-            case REVIEW:
-                return 2;
-            case FRIEND:
-                return 3;
-            default:
-                throw new ValidationException("No such event type found.");
+            case "FRIEND":
+                return Feed.builder()
+                        .eventType(eventType)
+                        .operation(rs.getString("operation").toUpperCase())
+                        .userId(rs.getInt("user_id"))
+                        .timestamp(rs.getTimestamp("publication_time").toInstant().toEpochMilli())
+                        .eventId(rs.getInt("event_id"))
+                        .entityId(rs.getInt("friend_id"))
+                        .build();
+            case "LIKE":
+                return Feed.builder()
+                        .eventType(eventType)
+                        .operation(rs.getString("operation").toUpperCase())
+                        .userId(rs.getInt("user_id"))
+                        .timestamp(rs.getTimestamp("publication_time").toInstant().toEpochMilli())
+                        .eventId(rs.getInt("event_id"))
+                        .entityId(rs.getInt("film_id"))
+                        .build();
+            case "REVIEW":
+                return Feed.builder()
+                        .eventType(eventType)
+                        .operation(rs.getString("operation").toUpperCase())
+                        .userId(rs.getInt("user_id"))
+                        .timestamp(rs.getTimestamp("publication_time").toInstant().toEpochMilli())
+                        .eventId(rs.getInt("event_id"))
+                        .entityId(rs.getInt("review_id"))
+                        .build();
         }
+        return null;
     }
 
     @Override
-    public int getOperationTypeId(EventOperationEnum operationType) {
-        switch (operationType) {
-            case REMOVE:
-                return 1;
-            case ADD:
-                return 2;
-            case UPDATE:
-                return 3;
+    public void updateFeed(String eventType, String operation, Long userId, Long entityId, Instant instant) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sqlQuery;
+        switch (eventType) {
+            case "FRIEND":
+                sqlQuery = "INSERT INTO events (event_type, operation, publication_time, user_id, friend_id) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                break;
+            case "LIKE":
+                sqlQuery = "INSERT INTO events (event_type, operation, publication_time, user_id, film_id) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                break;
+            case "REVIEW":
+                sqlQuery = "INSERT INTO events (event_type, operation, publication_time, user_id, review_id) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                break;
             default:
-                throw new ValidationException("No such operation type found.");
+                throw new IllegalArgumentException();
         }
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sqlQuery, new String[]{"event_id"});
+
+            ps.setString(1, eventType);
+            ps.setString(2, operation);
+            ps.setTimestamp(3, Timestamp.from(instant));
+            ps.setLong(4, userId);
+            ps.setLong(5, entityId);
+
+            return ps;
+        }, keyHolder);
     }
 }

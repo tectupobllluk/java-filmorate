@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.repository;
 
-import ru.yandex.practicum.filmorate.model.EventOperationEnum;
-import ru.yandex.practicum.filmorate.model.EventTypeEnum;
+import ru.yandex.practicum.filmorate.model.Feed;
+import java.time.Instant;
+import java.util.List;
 
 public interface FeedRepository {
-    void saveEvent(long userId, int eventType, int operationType, long entityId);
 
-    int getEventTypeId(EventTypeEnum eventType);
+    List<Feed> getFeedList(int id);
 
-    int getOperationTypeId(EventOperationEnum operationType);
+    void updateFeed(String eventType, String operation, Long userId, Long entityId, Instant instant);
+
 }

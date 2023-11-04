@@ -12,13 +12,3 @@ INSERT INTO genres (genre_id, genre_name) VALUES
     (4, 'Триллер'),
     (5, 'Документальный'),
     (6, 'Боевик');
-
-INSERT INTO event_types (type_id, type_name) VALUES
-    (1, 'LIKE'),
-    (2, 'REVIEW'),
-    (3, 'FRIEND');
-
-INSERT INTO operation_types (operation_id, operation_name) VALUES
-    (1, 'REMOVE'),
-    (2, 'ADD'),
-    (3, 'UPDATE');
