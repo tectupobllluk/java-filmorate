@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.repository;
 
-import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
-import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
+import ru.yandex.practicum.filmorate.model.EventOperationEnum;
+import ru.yandex.practicum.filmorate.model.EventTypeEnum;
 
-public interface FeedSaveDB {
+public interface FeedRepository {
     void saveEvent(long userId, int eventType, int operationType, long entityId);
 
     int getEventTypeId(EventTypeEnum eventType);

@@ -2,22 +2,23 @@ package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
-import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.EventOperationEnum;
+import ru.yandex.practicum.filmorate.model.EventTypeEnum;
 
 import javax.validation.ValidationException;
 import java.time.Instant;
 
 
-@Component
+@Repository
 @RequiredArgsConstructor
-public class DbFeedRepository implements FeedSaveDB {
+public class DbFeedRepository implements FeedRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void saveEvent(long userId, int eventType, int operationType, long entityId) {
-        String sqlQuery = "INSERT INTO events (time_stamp, user_id, event_type, operation_type, entity_id) VALUES (?, ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO events (time_stamp, user_id, event_type, operation_type, entity_id) " +
+                "VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery, Instant.now().toEpochMilli(), userId, eventType, operationType, entityId);
     }
 

@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.List;
 
 public interface GenreRepository {
-
     Genre getGenre(int genreId);
 
     List<Genre> getAllGenres();
@@ -15,5 +14,4 @@ public interface GenreRepository {
     void insertGenres(Film film);
 
     void removeFilmGenres(Film film);
-
 }

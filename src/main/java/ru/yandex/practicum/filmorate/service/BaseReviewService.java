@@ -59,11 +59,8 @@ public class BaseReviewService implements ReviewService {
         if (filmId > 0) {
             filmRepository.getFilm(filmId)
                     .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
-
             return reviewRepository.getReviewsByFilmId(filmId, count);
-
         } else {
-
             return reviewRepository.getReviewsByFilmId(count);
         }
     }

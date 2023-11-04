@@ -41,4 +41,11 @@ public class ErrorHandler {
         log.info("Validation: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final BadRequestException e) {
+        log.info("BadRequest: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 }

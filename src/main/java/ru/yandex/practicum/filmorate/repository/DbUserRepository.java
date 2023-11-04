@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
-import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperationEnum;
+import ru.yandex.practicum.filmorate.model.EventTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,13 +20,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class DbUserRepository implements UserRepository {
 
     private final JdbcOperations jdbcTemplate;
-
-    private final FeedSaveDB feedSaveDB;
+    private final FeedRepository feedRepository;
 
     @Override
     public void saveUser(User user) {
@@ -97,7 +95,7 @@ public class DbUserRepository implements UserRepository {
     public void addFriend(User user, User friend) {
         final String sqlQuery = "INSERT INTO friends (user_id, friend_id) " +
                 "VALUES (?, ?);";
-         feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.FRIEND), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD), friend.getId());
+        feedRepository.saveEvent(user.getId(), feedRepository.getEventTypeId(EventTypeEnum.FRIEND), feedRepository.getOperationTypeId(EventOperationEnum.ADD), friend.getId());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
 
     }
@@ -107,9 +105,8 @@ public class DbUserRepository implements UserRepository {
         final String sqlQuery = "DELETE FROM friends " +
                 "WHERE (user_id = ? AND friend_id = ?) " +
                 "OR (user_id = ? AND friend_id = ?);";
-        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.FRIEND), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), friend.getId());
+        feedRepository.saveEvent(user.getId(), feedRepository.getEventTypeId(EventTypeEnum.FRIEND), feedRepository.getOperationTypeId(EventOperationEnum.REMOVE), friend.getId());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId(), friend.getId(), user.getId());
-
     }
 
     @Override
@@ -130,6 +127,30 @@ public class DbUserRepository implements UserRepository {
                 "WHERE u.user_id = f.friend_id " +
                 "AND f.user_id = ?;";
         return jdbcTemplate.query(sqlQuery, new UserRowMapper(), user.getId());
+    }
+
+    @Override
+    public List<Event> getFeed(long userId) {
+        final String sqlQuery = "SELECT e.*, " +
+                "et.type_name as type_name, " +
+                "ot.operation_name as operation_name " +
+                "FROM events as e " +
+                "JOIN event_types as et ON e.event_type = et.type_id " +
+                "JOIN operation_types as ot ON e.operation_type = ot.operation_id " +
+                "WHERE e.user_id = ?;";
+
+        return jdbcTemplate.query(sqlQuery, this::makeEvent, userId);
+    }
+
+    private Event makeEvent(ResultSet resultSet, long i) throws SQLException {
+        return new Event(
+                resultSet.getInt("event_id"),
+                resultSet.getLong("time_stamp"),
+                resultSet.getInt("user_id"),
+                resultSet.getString("type_name"),
+                resultSet.getString("operation_name"),
+                resultSet.getInt("entity_id")
+        );
     }
 
     private static class UserRowMapper implements RowMapper<User> {

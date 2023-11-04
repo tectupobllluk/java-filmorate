@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
-import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
+import ru.yandex.practicum.filmorate.model.EventOperationEnum;
+import ru.yandex.practicum.filmorate.model.EventTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -23,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class DbFilmRepository implements FilmRepository {
 
@@ -31,7 +29,7 @@ public class DbFilmRepository implements FilmRepository {
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
-    private final FeedSaveDB feedSaveDB;
+    private final FeedRepository feedRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -114,7 +112,7 @@ public class DbFilmRepository implements FilmRepository {
         final String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
                 "VALUES (?, ?);";
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
-        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.LIKE), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD), film.getId());
+        feedRepository.saveEvent(user.getId(), feedRepository.getEventTypeId(EventTypeEnum.LIKE), feedRepository.getOperationTypeId(EventOperationEnum.ADD), film.getId());
 
     }
 
@@ -122,7 +120,7 @@ public class DbFilmRepository implements FilmRepository {
     public void deleteLike(Film film, User user) {
         final String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?;";
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
-        feedSaveDB.saveEvent(user.getId(), feedSaveDB.getEventTypeId(EventTypeEnum.LIKE), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), film.getId());
+        feedRepository.saveEvent(user.getId(), feedRepository.getEventTypeId(EventTypeEnum.LIKE), feedRepository.getOperationTypeId(EventOperationEnum.REMOVE), film.getId());
     }
 
     @Override

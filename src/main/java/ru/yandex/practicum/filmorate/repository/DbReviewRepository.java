@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.enums.EventOperationEnum;
-import ru.yandex.practicum.filmorate.enums.EventTypeEnum;
+import ru.yandex.practicum.filmorate.model.EventOperationEnum;
+import ru.yandex.practicum.filmorate.model.EventTypeEnum;
 import ru.yandex.practicum.filmorate.model.Review;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class DbReviewRepository implements ReviewRepository {
 
     private final ReviewLikesRepository reviewLikesRepository;
-    private final FeedSaveDB feedSaveDB;
+    private final FeedRepository feedRepository;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -47,13 +47,12 @@ public class DbReviewRepository implements ReviewRepository {
         );
         int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
-        feedSaveDB.saveEvent(review.getUserId(), feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.ADD),reviewId);
+        feedRepository.saveEvent(review.getUserId(), feedRepository.getEventTypeId(EventTypeEnum.REVIEW), feedRepository.getOperationTypeId(EventOperationEnum.ADD),reviewId);
         return getReviewById(keyHolder.getKey().intValue());
     }
 
     @Override
     public Review updateReview(Review updatedReview) {
-
         String sql = "UPDATE reviews SET " +
                 "content_review = ?, is_positive = ? " +
                 "WHERE review_id = ?;";
@@ -62,7 +61,7 @@ public class DbReviewRepository implements ReviewRepository {
                 updatedReview.getContent(),
                 updatedReview.getIsPositive(),
                 updatedReview.getReviewId());
-        feedSaveDB.saveEvent(updatedReview.getReviewId(), feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.UPDATE),updatedReview.getReviewId());
+        feedRepository.saveEvent(updatedReview.getReviewId(), feedRepository.getEventTypeId(EventTypeEnum.REVIEW), feedRepository.getOperationTypeId(EventOperationEnum.UPDATE),updatedReview.getReviewId());
         return getReviewById(updatedReview.getReviewId()).orElse(null);
     }
 
@@ -74,7 +73,7 @@ public class DbReviewRepository implements ReviewRepository {
             Review review = optionalReview.get();
             long userId = review.getUserId();
             jdbcTemplate.update(sql, reviewId);
-            feedSaveDB.saveEvent(userId, feedSaveDB.getEventTypeId(EventTypeEnum.REVIEW), feedSaveDB.getOperationTypeId(EventOperationEnum.REMOVE), reviewId);
+            feedRepository.saveEvent(userId, feedRepository.getEventTypeId(EventTypeEnum.REVIEW), feedRepository.getOperationTypeId(EventOperationEnum.REMOVE), reviewId);
         } else {
             throw new IllegalArgumentException("Review not found with id: " + reviewId);
         }
@@ -102,7 +101,6 @@ public class DbReviewRepository implements ReviewRepository {
                 "  WHERE u.review_id = r.review_id" +
                 ") DESC " +
                 "LIMIT ?;";
-
 
         return jdbcTemplate.query(sql, new ReviewRowMapper(), count);
     }

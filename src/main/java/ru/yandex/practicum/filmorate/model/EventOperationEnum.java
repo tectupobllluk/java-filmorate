@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.feed;
+package ru.yandex.practicum.filmorate.model;
 
 public enum EventOperationEnum {
     REMOVE,

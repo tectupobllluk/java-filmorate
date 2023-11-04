@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Event {
-
     private int eventId;
     private long timestamp;
     private int userId;

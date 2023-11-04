@@ -3,10 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.feed.Event;
+import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
-import ru.yandex.practicum.filmorate.service.event.EventService;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BaseUserService implements UserService {
     private final UserRepository userRepository;
-    private final EventService eventService;
+    private final FilmRepository filmRepository;
 
     @Override
     public void saveUser(User user) {
@@ -77,8 +78,15 @@ public class BaseUserService implements UserService {
     }
 
     @Override
-    public List<Event> getFeed(int id) {
-       User user = this.getUser(id);
-        return eventService.getFeed(user.getId());
+    public List<Event> getFeed(long id) {
+        User user = getUser(id);
+        return userRepository.getFeed(user.getId());
+    }
+
+    @Override
+    public void deleteUser(long userId) {
+        userRepository.getUser(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
+        userRepository.deleteUser(userId);
     }
 }
