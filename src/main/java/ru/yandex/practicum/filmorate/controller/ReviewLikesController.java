@@ -20,31 +20,27 @@ public class ReviewLikesController {
     public void likeReview(@PathVariable long id, @PathVariable long userId) {
         log.info("Put /{}/like/{} - Started!", id, userId);
 
-        reviewLikeService.likeReview(id, userId);
-        log.info("After like add - {}", reviewService.getReviewByFilmId(id, 10));
+        reviewLikeService.setReviewUsefulness(id, userId, 1);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
     public void dislikeReview(@PathVariable long id, @PathVariable long userId) {
         log.info("Put /{}/dislike/{} - Started!", id, userId);
 
-        reviewLikeService.dislikeReview(id, userId);
-        log.info("After dislike add - {}", reviewService.getReviewByFilmId(id, 10));
+        reviewLikeService.setReviewUsefulness(id, userId, -1);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLikeFromReview(@PathVariable long id, @PathVariable long userId) {
         log.info("Delete /{}/like/{} - Started!", id, userId);
 
-        reviewLikeService.removeLikeFromReview(id, userId);
-        log.info("After like remove - {}", reviewService.getReviewByFilmId(id, 10));
+        reviewLikeService.removeReviewUsefulness(id, userId, -1);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void removeDislikeFromReview(@PathVariable long id, @PathVariable long userId) {
         log.info("Delete /{}/dislike/{} - Started!", id, userId);
 
-        reviewLikeService.removeDislikeFromReview(id, userId);
-        log.info("After dislike remove - {}", reviewService.getReviewByFilmId(id, 10));
+        reviewLikeService.removeReviewUsefulness(id, userId, 1);
     }
 }
