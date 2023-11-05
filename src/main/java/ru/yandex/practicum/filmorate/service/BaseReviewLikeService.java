@@ -15,46 +15,24 @@ public class BaseReviewLikeService implements ReviewLikeService {
     private final UserRepository userRepository;
 
     @Override
-    public void likeReview(long reviewId, long userId) {
+    public void removeReviewUsefulness(long reviewId, long userId, int usefulness) {
         reviewRepository.getReviewById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
 
         userRepository.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
 
-        reviewLikesRepository.likeReview(reviewId, userId);
+        reviewLikesRepository.removeReviewUsefulness(reviewId, userId, usefulness);
     }
 
-    @Override
-    public void dislikeReview(long reviewId, long userId) {
+
+    public void setReviewUsefulness(long reviewId, long userId, int usefulness) {
         reviewRepository.getReviewById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
 
         userRepository.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
 
-        reviewLikesRepository.dislikeReview(reviewId, userId);
-    }
-
-    @Override
-    public void removeLikeFromReview(long reviewId, long userId) {
-        reviewRepository.getReviewById(reviewId)
-                .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
-
-        userRepository.getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
-
-        reviewLikesRepository.removeLikeFromReview(reviewId, userId);
-    }
-
-    @Override
-    public void removeDislikeFromReview(long reviewId, long userId) {
-        reviewRepository.getReviewById(reviewId)
-                .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
-
-        userRepository.getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
-
-        reviewLikesRepository.removeDislikeFromReview(reviewId, userId);
+        reviewLikesRepository.setReviewUsefulness(reviewId, userId, usefulness);
     }
 }
