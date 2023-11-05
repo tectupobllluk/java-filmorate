@@ -136,7 +136,7 @@ public class DbFilmRepository implements FilmRepository {
                     "LIMIT ?;";
             return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
         } else {
-            if (genreId == -1) {
+            if (genreId == null) {
                 final String sqlQuery = "SELECT f.* " +
                         "FROM films AS f " +
                         "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
@@ -145,7 +145,7 @@ public class DbFilmRepository implements FilmRepository {
                         "ORDER BY COUNT(l.user_id) DESC " +
                         "LIMIT ?;";
                 return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), year, count);
-            } else if (year == -1) {
+            } else if (year == null) {
                 final String sqlQuery = "SELECT f.* " +
                         "FROM films AS f " +
                         "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
