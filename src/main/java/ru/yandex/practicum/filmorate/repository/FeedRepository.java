@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.Feed;
-import java.time.Instant;
 import java.util.List;
 
 public interface FeedRepository {
 
-    List<Feed> getFeedList(int id);
+    List<Feed> getFeedList(long userId);
 
-    void updateFeed(String eventType, String operation, Long userId, Long entityId, Instant instant);
+    void updateFeed(Feed event);
 
 }

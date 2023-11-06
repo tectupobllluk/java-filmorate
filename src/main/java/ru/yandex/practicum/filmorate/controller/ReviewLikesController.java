@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.ReviewLikeService;
-import ru.yandex.practicum.filmorate.service.ReviewService;
-
 
 @RestController
 @RequestMapping("/reviews")
@@ -14,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.ReviewService;
 public class ReviewLikesController {
 
     private final ReviewLikeService reviewLikeService;
-    private final ReviewService reviewService;
 
     @PutMapping("/{id}/like/{userId}")
     public void likeReview(@PathVariable long id, @PathVariable long userId) {

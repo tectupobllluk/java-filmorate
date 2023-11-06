@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.enums.FeedOperationEnum;
+import ru.yandex.practicum.filmorate.enums.FeedTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
-
 import java.util.List;
 
 @Service
@@ -16,6 +17,7 @@ public class BaseReviewService implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
+    private final FeedService feedService;
 
     @Override
     public Review createReview(Review review) {
@@ -24,8 +26,10 @@ public class BaseReviewService implements ReviewService {
         filmRepository.getFilm(review.getFilmId())
                 .orElseThrow(() -> new NotFoundException("Film not found"));
 
-        return reviewRepository.createReview(review)
+        Review reviewCreated = reviewRepository.createReview(review)
                 .orElseThrow(() -> new NotFoundException("Failed to create a review"));
+        feedService.createFeed(reviewCreated.getUserId(), FeedTypeEnum.REVIEW, FeedOperationEnum.ADD, reviewCreated.getReviewId());
+        return reviewCreated;
     }
 
     @Override
@@ -36,16 +40,17 @@ public class BaseReviewService implements ReviewService {
                 .orElseThrow(() -> new NotFoundException("Film not found"));
         reviewRepository.getReviewById(review.getReviewId())
                 .orElseThrow(() -> new NotFoundException("Failed to create a review"));
-
-        return reviewRepository.updateReview(review);
+        Review reviewUpdated = reviewRepository.updateReview(review);
+        feedService.createFeed(reviewUpdated.getUserId(), FeedTypeEnum.REVIEW, FeedOperationEnum.UPDATE, reviewUpdated.getReviewId());
+        return reviewUpdated;
     }
 
     @Override
     public void deleteReview(long reviewId) {
-        reviewRepository.getReviewById(reviewId)
+        Review review = reviewRepository.getReviewById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
-
         reviewRepository.deleteReview(reviewId);
+        feedService.createFeed(review.getUserId(), FeedTypeEnum.REVIEW, FeedOperationEnum.REMOVE, review.getReviewId());
     }
 
     @Override

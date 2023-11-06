@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.repository;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +28,6 @@ public interface FilmRepository {
 
     List<Film> searchFilms(String query, String fields);
 
-    List<Film> getFilmsRecommendation(Long userId);
+    List<Film> getFilmsRecommendation(long userId);
 
 }
