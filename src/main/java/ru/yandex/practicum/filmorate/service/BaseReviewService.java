@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.ReviewRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
+
 import java.util.List;
 
 @Service
@@ -47,8 +48,7 @@ public class BaseReviewService implements ReviewService {
 
     @Override
     public void deleteReview(long reviewId) {
-        Review review = getReviewById(reviewId);
-        reviewRepository.getReviewById(reviewId)
+        Review review = reviewRepository.getReviewById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));
         reviewRepository.deleteReview(reviewId);
         feedService.createFeed(review.getUserId(), FeedTypeEnum.REVIEW, FeedOperationEnum.REMOVE, review.getReviewId());

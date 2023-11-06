@@ -29,5 +29,4 @@ public interface UserService {
 
     List<Feed> getFeed(long userId);
 
-
 }

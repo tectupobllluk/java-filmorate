@@ -235,14 +235,12 @@ public class DbFilmRepository implements FilmRepository {
         String similarUsersQuery = "SELECT user_id " +
                 "FROM likes " +
                 "WHERE film_id IN (" + String.join(",", Collections.nCopies(userLikes.size(), "?")) + ") " +
-                "AND user_id <> ? " +
+                "AND user_id <> " + userId +
                 "GROUP BY user_id " +
                 "ORDER BY COUNT(*) DESC " +
                 "LIMIT " + maxRecommendations + ";";
         List<Object> params = new ArrayList<>(userLikes);
-        params.add(userId);
         List<Long> similarUserIds = jdbcTemplate.queryForList(similarUsersQuery, Long.class, params.toArray());
-
         if (similarUserIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -255,11 +253,8 @@ public class DbFilmRepository implements FilmRepository {
                 "(SELECT 1 FROM likes lu WHERE lu.user_id = ? AND lu.film_id = f.film_id);";
 
         List<Long> allSimilarUserIds = new ArrayList<>(similarUserIds);
-        allSimilarUserIds.add(userId);
-
-        return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), allSimilarUserIds.toArray());
+        return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), allSimilarUserIds.toArray(),userId);
     }
-
     private List<Long> getUserLikes(Long userId) {
         final String sqlQuery = "SELECT l.film_id " +
                 "FROM likes AS l " +

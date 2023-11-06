@@ -60,7 +60,6 @@ public class BaseFilmService implements FilmService {
                 .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
         filmRepository.deleteLike(film, user);
         feedService.createFeed(userId, FeedTypeEnum.LIKE, FeedOperationEnum.REMOVE, filmId);
-
     }
 
     @Override
