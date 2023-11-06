@@ -14,10 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -229,34 +226,38 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     @Override
-    public List<Film> getFilmsRecommendation(Long userId) {
-        final List<Long> ids = getUserLikes(userId);
-        if (ids.isEmpty()) {
+    public List<Film> getFilmsRecommendation(long userId) {
+        final List<Long> userLikes = getUserLikes(userId);
+        if (userLikes.isEmpty()) {
             return Collections.emptyList();
         }
-
-        String sqlQuery = "SELECT user_id " +
+        int maxRecommendations = 10;
+        String similarUsersQuery = "SELECT user_id " +
                 "FROM likes " +
-                "WHERE film_id IN " +
-                "(" +
-                String.join(",", Collections.nCopies(ids.size(), "?")) +
-                ") " +
+                "WHERE film_id IN (" + String.join(",", Collections.nCopies(userLikes.size(), "?")) + ") " +
+                "AND user_id <> ? " +
                 "GROUP BY user_id " +
-                "ORDER BY COUNT(*) DESC;";
+                "ORDER BY COUNT(*) DESC " +
+                "LIMIT " + maxRecommendations + ";";
+        List<Object> params = new ArrayList<>(userLikes);
+        params.add(userId);
+        List<Long> similarUserIds = jdbcTemplate.queryForList(similarUsersQuery, Long.class, params.toArray());
 
-        List<Long> sqlUserId = jdbcTemplate.queryForList(sqlQuery, Long.class, ids.toArray());
-        if (sqlUserId.size() == 1) {
+        if (similarUserIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        sqlQuery = "SELECT f.* " +
+        String recommendedFilmsQuery = "SELECT f.* " +
                 "FROM films AS f " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
                 "WHERE l.user_id = ? " +
                 "AND NOT EXISTS " +
                 "(SELECT 1 FROM likes lu WHERE lu.user_id = ? AND lu.film_id = f.film_id);";
 
-        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), sqlUserId.get(1), userId);
+        List<Long> allSimilarUserIds = new ArrayList<>(similarUserIds);
+        allSimilarUserIds.add(userId);
+
+        return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), allSimilarUserIds.toArray());
     }
 
     private List<Long> getUserLikes(Long userId) {
