@@ -14,7 +14,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +27,6 @@ public class DbFilmRepository implements FilmRepository {
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
-    private final FeedRepository feedRepository;
 
     @Override
     public Film saveFilm(Film film) {
@@ -114,14 +112,12 @@ public class DbFilmRepository implements FilmRepository {
                 "WHEN NOT MATCHED THEN " +
                 "INSERT (film_id, user_id) " +
                 "VALUES (s.film_id, s.user_id);";
-        feedRepository.updateFeed("LIKE", "ADD", user.getId(), film.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
     }
 
     @Override
     public void deleteLike(Film film, User user) {
         final String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?;";
-        feedRepository.updateFeed("LIKE", "REMOVE", user.getId(), film.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
     }
 
@@ -235,7 +231,7 @@ public class DbFilmRepository implements FilmRepository {
     @Override
     public List<Film> getFilmsRecommendation(Long userId) {
         final List<Long> ids = getUserLikes(userId);
-        if (ids.size() == 0) {
+        if (ids.isEmpty()) {
             return Collections.emptyList();
         }
 

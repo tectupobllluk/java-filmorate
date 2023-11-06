@@ -1,18 +1,17 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +21,6 @@ import java.util.Optional;
 public class DbUserRepository implements UserRepository {
 
     private final JdbcOperations jdbcTemplate;
-    private final FeedRepository feedRepository;
 
     @Override
     public void saveUser(User user) {
@@ -93,7 +91,6 @@ public class DbUserRepository implements UserRepository {
     public void addFriend(User user, User friend) {
         final String sqlQuery = "INSERT INTO friends (user_id, friend_id) " +
                 "VALUES (?, ?);";
-        feedRepository.updateFeed("FRIEND", "ADD", user.getId(), friend.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
 
     }
@@ -103,7 +100,6 @@ public class DbUserRepository implements UserRepository {
         final String sqlQuery = "DELETE FROM friends " +
                 "WHERE (user_id = ? AND friend_id = ?) " +
                 "OR (user_id = ? AND friend_id = ?);";
-        feedRepository.updateFeed("FRIEND", "REMOVE", user.getId(), friend.getId(), Instant.now());
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId(), friend.getId(), user.getId());
     }
 
