@@ -7,10 +7,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,7 +20,6 @@ import java.util.Optional;
 public class DbReviewRepository implements ReviewRepository {
 
     private final ReviewLikesRepository reviewLikesRepository;
-    private final FeedRepository feedRepository;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -46,8 +45,6 @@ public class DbReviewRepository implements ReviewRepository {
         );
         int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
-        feedRepository.updateFeed("REVIEW", "ADD",
-                review.getUserId(), review.getReviewId(), Instant.now());
         return getReviewById(keyHolder.getKey().intValue());
     }
 
@@ -61,8 +58,6 @@ public class DbReviewRepository implements ReviewRepository {
                 updatedReview.getContent(),
                 updatedReview.getIsPositive(),
                 updatedReview.getReviewId());
-        feedRepository.updateFeed("REVIEW", "UPDATE",
-                updatedReview.getReviewId(), updatedReview.getReviewId(), Instant.now());
         return getReviewById(updatedReview.getReviewId()).orElse(null);
     }
 
@@ -71,10 +66,7 @@ public class DbReviewRepository implements ReviewRepository {
         final String sql = "DELETE FROM reviews WHERE review_id = ?;";
         Optional<Review> optionalReview = getReviewById(reviewId);
         if (optionalReview.isPresent()) {
-            Review review = optionalReview.get();
             jdbcTemplate.update(sql, reviewId);
-            feedRepository.updateFeed("REVIEW", "REMOVE",
-                    review.getUserId(), review.getReviewId(), Instant.now());
         } else {
             throw new IllegalArgumentException("Review not found with id: " + reviewId);
         }

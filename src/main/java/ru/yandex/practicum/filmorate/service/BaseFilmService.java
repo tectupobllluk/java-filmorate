@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.enums.FeedOperationEnum;
+import ru.yandex.practicum.filmorate.enums.FeedTypeEnum;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,6 +17,7 @@ import java.util.List;
 public class BaseFilmService implements FilmService {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
+    private final FeedService feedService;
 
     @Override
     public Film saveFilm(Film film) {
@@ -46,6 +49,7 @@ public class BaseFilmService implements FilmService {
         Film film = filmRepository.getFilm(filmId)
                 .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
         filmRepository.addLike(film, user);
+        feedService.createFeed(userId, FeedTypeEnum.LIKE, FeedOperationEnum.ADD, filmId);
     }
 
     @Override
@@ -55,6 +59,7 @@ public class BaseFilmService implements FilmService {
         Film film = filmRepository.getFilm(filmId)
                 .orElseThrow(() -> new NotFoundException("Film not found with id = " + filmId));
         filmRepository.deleteLike(film, user);
+        feedService.createFeed(userId, FeedTypeEnum.LIKE, FeedOperationEnum.REMOVE, filmId);
     }
 
     @Override
