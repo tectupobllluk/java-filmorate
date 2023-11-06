@@ -70,6 +70,7 @@ public class BaseUserService implements UserService {
 
     @Override
     public List<Film> getFilmRecommendations(long userId) {
+        userRepository.getUser(userId).orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
         return filmRepository.getFilmsRecommendation(userId);
     }
 

@@ -20,7 +20,9 @@ public class DbFeedRepository implements FeedRepository {
 
     @Override
     public List<Feed> getFeedList(long id) {
-        String sqlQuery = "SELECT * FROM feeds WHERE user_id = ?";
+        String sqlQuery = "SELECT * FROM feeds " +
+                "WHERE user_id = ?" +
+                "ORDER BY event_id";
 
         return jdbcTemplate.query(sqlQuery, this::rowMapperForFeed, id);
 

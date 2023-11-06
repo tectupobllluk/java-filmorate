@@ -132,7 +132,7 @@ public class DbFilmRepository implements FilmRepository {
                 final String sqlQuery = "SELECT f.* " +
                         "FROM films AS f " +
                         "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
-                        "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS DATE)) = ? " +
+                        "WHERE YEAR(f.release_date) = ? " +
                         "GROUP BY f.film_id " +
                         "ORDER BY COUNT(l.user_id) DESC " +
                         "LIMIT ?;";
@@ -199,7 +199,6 @@ public class DbFilmRepository implements FilmRepository {
                 "ORDER BY COUNT(*) DESC;";
 
         return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), userId, friendId);
-
     }
 
     @Override
@@ -247,12 +246,12 @@ public class DbFilmRepository implements FilmRepository {
         String recommendedFilmsQuery = "SELECT f.* " +
                 "FROM films AS f " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
-                "WHERE l.user_id = ? " +
+                "WHERE l.user_id IN (" +
+                String.join(",", Collections.nCopies(similarUserIds.size(), "?")) + ") " +
                 "AND NOT EXISTS " +
                 "(SELECT 1 FROM likes lu WHERE lu.user_id = ? AND lu.film_id = f.film_id);";
 
-        List<Long> allSimilarUserIds = new ArrayList<>(similarUserIds);
-        return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), allSimilarUserIds.toArray(),userId);
+        return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), similarUserIds.toArray(),userId);
     }
 
     private List<Long> getUserLikes(Long userId) {

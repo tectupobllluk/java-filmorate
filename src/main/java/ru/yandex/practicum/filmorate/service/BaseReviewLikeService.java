@@ -25,7 +25,6 @@ public class BaseReviewLikeService implements ReviewLikeService {
         reviewLikesRepository.removeReviewUsefulness(reviewId, userId, usefulness);
     }
 
-
     public void setReviewUsefulness(long reviewId, long userId, int usefulness) {
         reviewRepository.getReviewById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Review not found with id = " + reviewId));

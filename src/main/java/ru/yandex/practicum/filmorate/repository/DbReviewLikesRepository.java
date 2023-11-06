@@ -19,19 +19,19 @@ public class DbReviewLikesRepository implements ReviewLikesRepository {
     }
 
     public void setReviewUsefulness(long reviewId, long userId, int usefulness) {
-        String checkExistenceQuery = "SELECT COUNT(*) FROM useful_review WHERE review_id = ? AND user_id = ?;";
-        int count = jdbcTemplate.queryForObject(checkExistenceQuery, Integer.class, reviewId, userId);
-
-        if (count > 0) {
-            String updateQuery = "UPDATE useful_review " +
-                    "SET useful = ? " +
-                    "WHERE review_id = ? " +
-                    "AND user_id = ?;";
-            jdbcTemplate.update(updateQuery, usefulness, reviewId, userId);
-        } else {
-            String insertQuery = "INSERT INTO useful_review (review_id, user_id, useful) VALUES (?, ?, ?);";
-            jdbcTemplate.update(insertQuery, reviewId, userId, usefulness);
-        }
+//        String checkExistenceQuery = "SELECT COUNT(*) FROM useful_review WHERE review_id = ? AND user_id = ?;";
+//        int count = jdbcTemplate.queryForObject(checkExistenceQuery, Integer.class, reviewId, userId);
+//
+//        if (count > 0) {
+//            String updateQuery = "UPDATE useful_review " +
+//                    "SET useful = ? " +
+//                    "WHERE review_id = ? " +
+//                    "AND user_id = ?;";
+//            jdbcTemplate.update(updateQuery, usefulness, reviewId, userId);
+//        } else {
+        String sqlQuery = "merge into useful_review(review_id, user_id, useful) values (?, ?, ?)";
+            jdbcTemplate.update(sqlQuery, reviewId, userId, usefulness);
+//        }
     }
 
     @Override
