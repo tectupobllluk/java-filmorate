@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 import ru.yandex.practicum.filmorate.validator.ReleaseDateConstraint;
-
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -26,4 +25,5 @@ public class Film {
     @NotNull
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
+    private List<Director> directors = new ArrayList<>();
 }

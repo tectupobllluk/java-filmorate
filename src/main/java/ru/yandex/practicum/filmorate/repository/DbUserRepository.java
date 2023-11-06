@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class DbUserRepository implements UserRepository {
 
@@ -83,10 +81,18 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
+    public void deleteUser(long userId) {
+        final String sqlQuery = "DELETE FROM users " +
+                "WHERE user_id = ?;";
+        jdbcTemplate.update(sqlQuery, userId);
+    }
+
+    @Override
     public void addFriend(User user, User friend) {
         final String sqlQuery = "INSERT INTO friends (user_id, friend_id) " +
                 "VALUES (?, ?);";
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
+
     }
 
     @Override
