@@ -254,6 +254,7 @@ public class DbFilmRepository implements FilmRepository {
         List<Long> allSimilarUserIds = new ArrayList<>(similarUserIds);
         return jdbcTemplate.query(recommendedFilmsQuery, new FilmRowMapper(), allSimilarUserIds.toArray(),userId);
     }
+
     private List<Long> getUserLikes(Long userId) {
         final String sqlQuery = "SELECT l.film_id " +
                 "FROM likes AS l " +
